@@ -1,2 +1,5 @@
 .vscode
 *.pdf
+.env
+secrets/
+default_conf
