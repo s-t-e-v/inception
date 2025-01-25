@@ -5,7 +5,7 @@ RUN apt update && \
 
 WORKDIR /app
 
-COPY launcher.sh .
+COPY tools/launcher.sh .
 
 EXPOSE 80
 
