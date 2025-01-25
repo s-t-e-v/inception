@@ -1,8 +1,18 @@
 #!/bin/bash
 
 # nginx.conf is in /etc/nginx/
-ls /etc/nginx/
+# ls /
+# echo "---"
+# ls /app/
+# echo "---"
+# ls /etc/nginx/
+# echo "---"
+# ls /var
+# echo "---"
+ls /var/www/sbandaog.42.fr
+echo "---"
+cat /var/www/sbandaog.42.fr/index.html
+echo "---"
 cat /etc/nginx/nginx.conf
-service nginx start
-service nginx status
+echo "---"
 nginx -g 'daemon off;'
