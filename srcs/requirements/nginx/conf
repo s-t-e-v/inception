@@ -2,7 +2,6 @@ events {}
 
 http {
     server {
-        listen 8042;
         location / {
             root /var/www/sbandaog.42.fr;
             index index.html;

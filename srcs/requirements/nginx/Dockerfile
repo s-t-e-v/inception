@@ -7,9 +7,8 @@ RUN apt update && \
 WORKDIR /app
 
 COPY conf /etc/nginx/nginx.conf
-COPY tools/launcher.sh .
 COPY test.html /var/www/sbandaog.42.fr/index.html
 
-EXPOSE 8042
+EXPOSE 80
 
-CMD ["bash", "./launcher.sh"]
+CMD ["nginx", "-g", "daemon off;"]
