@@ -1,15 +1,15 @@
 FROM debian:bullseye
 
-RUN apt update && \
-    apt install -y nginx && \
-    apt install -y openssl && \
-    openssl req -newkey rsa:2048 -keyout /etc/nginx/sbandaog.42.fr.key -x509 -days 90 -out /etc/nginx/sbandaog.42.fr.crt -nodes -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=sbandaog.42.fr" && \
-    chown root:root /etc/nginx/sbandaog.42.fr.key && \
-    chmod 600 /etc/nginx/sbandaog.42.fr.key && \
-    mkdir -p /var/sbandaog.42.fr
+ENV DOMAIN=sbandaog.42.fr
+
+RUN apt update && apt install -y nginx && apt install -y openssl && rm -rf /var/lib/apt/lists/* &&\
+    openssl req -newkey rsa:2048 -keyout /etc/nginx/${DOMAIN}.key -x509 -days 90 -out /etc/nginx/${DOMAIN}.crt -nodes -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${DOMAIN}" && \
+    chown root:root /etc/nginx/${DOMAIN}.key && \
+    chmod 600 /etc/nginx/${DOMAIN}.key && \
+    mkdir -p /var/${DOMAIN}
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
-COPY test.html /var/sbandaog.42.fr/index.html
+COPY test.html /var/${DOMAIN}/index.html
 
 EXPOSE 443
 

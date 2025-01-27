@@ -4,5 +4,5 @@
 secrets/
 
 # Temporary files
-default_conf
+default.conf
 test.html
