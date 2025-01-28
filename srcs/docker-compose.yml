@@ -1,7 +1,11 @@
 services:
   nginx:
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
     build:
       context: requirements/nginx
+      args:
+        - DOMAIN_NAME=${DOMAIN_NAME}
       dockerfile: Dockerfile
     ports:
       - "443:443"
