@@ -1,7 +1,5 @@
 services:
   nginx:
-    environment:
-      - DOMAIN_NAME=${DOMAIN_NAME}
     build:
       context: requirements/nginx
       args:
