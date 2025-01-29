@@ -1,14 +1,17 @@
 FROM debian:bullseye
 
-ENV PASSWORD changeme
+RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=secret,id=db_root_password \
+    DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password) && \
+    export DB_ROOT_PASSWORD  && \
+    service mariadb start && \
+    echo "UPDATE mysql.user SET Password=PASSWORD('$DB_ROOT_PASSWORD') WHERE User='root'; \
+        DELETE FROM mysql.user WHERE User=''; \
+        DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); \
+        DROP DATABASE IF EXISTS test; \
+        DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'; \
+        FLUSH PRIVILEGES;" | mysql --user=root
 
-RUN apt update && apt install -y apt install -y mariadb-server && rm -rf /var/lib/apt/lists/* && \
-    mysql -e "UPDATE mysql.user SET Password = PASSWORD('${PASSWORD}') WHERE User = 'root'" && \
-    mysql -e "DROP USER ''@'localhost'" && \
-    mysql -e "DROP USER ''@'$(hostname)'" && \
-    mysql -e "DROP DATABASE test" && \
-    mysql -e "FLUSH PRIVILEGES"
+EXPOSE 3306
 
-EXPOSE 9000
-
-CMD ["service", "start", "mariadb"]
+CMD ["cat", "/run/secrets/db_root_password" ]

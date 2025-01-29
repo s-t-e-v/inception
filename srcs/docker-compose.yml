@@ -8,3 +8,22 @@ services:
     ports:
       - "443:443"
     restart: always
+  mariadb:
+    build:
+      context: requirements/mariadb
+      args:
+        - DOMAIN_NAME=${DOMAIN_NAME}
+      dockerfile: Dockerfile
+      secrets:
+        - db_root_password
+        - db_password
+    secrets:
+       - db_root_password
+       - db_password
+    # restart: always
+
+secrets:
+  db_password:
+    file: ../secrets/db_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
