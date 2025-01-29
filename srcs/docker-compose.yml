@@ -7,20 +7,23 @@ services:
       dockerfile: Dockerfile
     ports:
       - "443:443"
+    networks:
+      - docker_network
     restart: always
   mariadb:
     build:
       context: requirements/mariadb
-      args:
-        - DOMAIN_NAME=${DOMAIN_NAME}
       dockerfile: Dockerfile
       secrets:
         - db_root_password
-        - db_password
+    networks:
+      - docker_network
     secrets:
        - db_root_password
-       - db_password
     # restart: always
+
+networks:
+  docker_network:
 
 secrets:
   db_password:

@@ -1,6 +1,7 @@
 FROM debian:bullseye
 
 COPY tools/secure_install.sh secure_install.sh
+COPY debug.sh debug.sh
 
 RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/*
 RUN --mount=type=secret,id=db_root_password \
@@ -11,4 +12,4 @@ RUN --mount=type=secret,id=db_root_password \
 
 EXPOSE 3306
 
-CMD ["mysqld"]
+CMD ["bash", "debug.sh"]
