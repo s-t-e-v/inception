@@ -1,15 +1,15 @@
 FROM debian:bullseye
 
-COPY tools/secure_install.sh secure_install.sh
-COPY debug.sh debug.sh
-
 RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/*
+
+COPY tools/secure_install.sh /usr/local/bin/secure_install.sh
+
 RUN --mount=type=secret,id=db_root_password \
     DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password) && \
-    export DB_ROOT_PASSWORD  && \
+    export DB_ROOT_PASSWORD && \
     service mariadb start && \
-    chmod +x secure_install.sh && ./secure_install.sh
+    bash secure_install.sh > out 2>error
 
 EXPOSE 3306
 
-CMD ["bash", "debug.sh"]
+CMD [ "mysqld" ]
