@@ -1,13 +1,29 @@
 #!/bin/bash
 
-# Make sure that NOBODY can access the server without a password
-mysql -u root -p -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';"
-# Kill the anonymous users
-mysql -u root -p"${DB_ROOT_PASSWORD}" -e "DROP USER ''@'localhost'"
-# Because our hostname varies we'll use some Bash magic here.
-mysql -u root -p"${DB_ROOT_PASSWORD}" -e "DROP USER ''@'$(hostname)'"
-# Kill off the demo database
-mysql -u root -p"${DB_ROOT_PASSWORD}" -e "DROP DATABASE test"
-# Make our changes take effect
-mysql -u root -p"${DB_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES"
-# Any subsequent tries to run queries this way will get access denied because lack of usr/pwd param
+# Store root password securely in a temp config
+cat > /root/.my.cnf <<EOF
+[client]
+user="root"
+password="$(cat /run/secrets/db_root_password)"
+EOF
+chmod 600 /root/.my.cnf
+
+exec mysqld_safe --skip-networking&
+
+# Wait for MariaDB to be fully ready
+until mysqladmin ping --silent; do
+    sleep 1
+done
+
+# Secure MariaDB
+DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+mysql --defaults-file=/root/.my.cnf -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password BY USING PASSWORD('${DB_ROOT_PASSWORD}');"
+mysql --defaults-file=/root/.my.cnf -e "DELETE FROM mysql.user WHERE User='';"
+mysql --defaults-file=/root/.my.cnf -e "DROP DATABASE IF EXISTS test;"
+mysql --defaults-file=/root/.my.cnf -e "FLUSH PRIVILEGES;"
+
+# Stop MariaDB after securing it
+mysqladmin --defaults-file=/root/.my.cnf shutdown
+
+# Remove password file for security
+rm -f /root/.my.cnf
