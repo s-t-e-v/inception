@@ -8,7 +8,7 @@ RUN --mount=type=secret,id=db_root_password \
     DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password) && \
     export DB_ROOT_PASSWORD && \
     service mariadb start && \
-    bash secure_install.sh > out 2>error
+    (bash /usr/local/bin/secure_install.sh > out 2>error) || echo
 
 EXPOSE 3306
 
