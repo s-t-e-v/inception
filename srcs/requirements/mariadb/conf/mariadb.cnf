@@ -1,0 +1,18 @@
+# The MariaDB server
+[mysqld]
+user                    = mysql
+datadir                 = /var/lib/mysql
+socket                  = /run/mysqld/mysqld.sock
+pid-file                = /run/mysqld/mysqld.pid
+
+# Networking
+bind-address            = 0.0.0.0  # Allow connections from WordPress in Docker network
+
+# Logging
+log-basename            = mysqld
+general-log             = 1
+slow_query_log          = 1
+
+# Performance optimizations (optional)
+skip-external-locking   # Prevents unnecessary locking, improves performance
+tmpdir                  = /tmp  # Temp file storage

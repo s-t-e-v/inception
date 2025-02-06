@@ -5,8 +5,7 @@ RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/*
 
 # Copy the secure install script
 COPY tools/secure_install.sh /usr/local/bin/secure_install.sh
-
-# FIXME: Copy a conf file inside the container instead of using the default one
+COPY conf/mariadb.cnf /etc/mysql/mariadb.cnf
 
 # Run setup as root
 # TODO: DRY: make an environment variable for /root/.my.cnf inside secure_install.sh
@@ -20,4 +19,4 @@ EXPOSE 3306
 # Run MariaDB as non-root `mysql` user
 USER mysql
 WORKDIR /app
-CMD [ "mysqld_safe" ]
+CMD [ "mysqld" ]

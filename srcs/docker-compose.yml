@@ -22,7 +22,7 @@ services:
       - db:/var/lib/mysql
     secrets:
       - db_root_password
-    # restart: always
+    restart: always
 
 networks:
   docker_network:

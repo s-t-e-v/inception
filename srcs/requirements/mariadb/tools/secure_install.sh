@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Ensure the MySQL runtime directory exists and set correct permissions
+mkdir -p /run/mysqld
+chown mysql:mysql /run/mysqld
+
 # Store root password securely in a temp config
 cat > /root/.my.cnf <<EOF
 [client]
@@ -8,7 +12,7 @@ password="$(cat /run/secrets/db_root_password)"
 EOF
 chmod 600 /root/.my.cnf
 
-exec mysqld_safe --skip-networking&
+mysqld&
 
 # Wait for MariaDB to be fully ready
 until mysqladmin ping --silent; do
