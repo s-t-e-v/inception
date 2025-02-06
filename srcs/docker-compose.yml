@@ -3,7 +3,7 @@ services:
     build:
       context: requirements/nginx
       args:
-        - DOMAIN_NAME=${DOMAIN_NAME}
+        - FQDN=${LOGIN}.${DOMAIN_NAME}
       dockerfile: Dockerfile
     ports:
       - "443:443"
@@ -18,12 +18,22 @@ services:
         - db_root_password
     networks:
       - docker_network
+    volumes:
+      - wordpress:/var/lib/mysql
     secrets:
        - db_root_password
     # restart: always
 
 networks:
   docker_network:
+
+volumes:
+ wordpress:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/${LOGIN}/data/wordpress
 
 secrets:
   db_password:

@@ -6,11 +6,11 @@ RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/*
 # Copy the secure install script
 COPY tools/secure_install.sh /usr/local/bin/secure_install.sh
 
-# FIXME - Copy a conf file inside the container instead of using the default one
+# FIXME: Copy a conf file inside the container instead of using the default one
 
 # Run setup as root
-# TODO - DRY: make an environment variable for /root/.my.cnf inside secure_install.sh
-# TODO - DRY: make an environment variable for cat /run/secrets/db_root_password inside secure_install.sh
+# TODO: DRY: make an environment variable for /root/.my.cnf inside secure_install.sh
+# TODO: DRY: make an environment variable for cat /run/secrets/db_root_password inside secure_install.sh
 RUN --mount=type=secret,id=db_root_password \
     bash secure_install.sh
 
