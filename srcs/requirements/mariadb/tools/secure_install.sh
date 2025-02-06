@@ -17,7 +17,7 @@ done
 
 # Secure MariaDB
 DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
-mysql --defaults-file=/root/.my.cnf -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password BY USING PASSWORD('${DB_ROOT_PASSWORD}');"
+mysql --defaults-file=/root/.my.cnf -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('${DB_ROOT_PASSWORD}');"
 mysql --defaults-file=/root/.my.cnf -e "DELETE FROM mysql.user WHERE User='';"
 mysql --defaults-file=/root/.my.cnf -e "DROP DATABASE IF EXISTS test;"
 mysql --defaults-file=/root/.my.cnf -e "FLUSH PRIVILEGES;"

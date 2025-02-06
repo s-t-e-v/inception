@@ -5,7 +5,7 @@ RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/*
 COPY tools/secure_install.sh /usr/local/bin/secure_install.sh
 
 RUN --mount=type=secret,id=db_root_password \
-    (bash /usr/local/bin/secure_install.sh > out 2>error) || echo
+    (bash secure_install.sh > out 2>error) || echo
 
 EXPOSE 3306
 
