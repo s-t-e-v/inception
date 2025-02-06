@@ -3,16 +3,13 @@ include srcs/.env  # Load variables from .env
 DATA_DIR ?= /home/$(LOGIN)/data
 COMPOSE_FILE := srcs/docker-compose.yml
 
-WORDPRESS_DATA_DIR := $(DATA_DIR)/wordpress
-
 all: up
 
 up: prepare
 	docker compose -f $(COMPOSE_FILE) up --build $(ARGS)
 
 prepare:
-	echo  $(WORDPRESS_DATA_DIR)
-	@mkdir -p $(WORDPRESS_DATA_DIR)
+	@mkdir -p $(DATA_DIR)/$(DB)
 
 stop:
 	docker compose -f $(COMPOSE_FILE) stop

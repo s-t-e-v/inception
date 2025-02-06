@@ -19,21 +19,21 @@ services:
     networks:
       - docker_network
     volumes:
-      - wordpress:/var/lib/mysql
+      - db:/var/lib/mysql
     secrets:
-       - db_root_password
+      - db_root_password
     # restart: always
 
 networks:
   docker_network:
 
 volumes:
- wordpress:
+ db:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /home/${LOGIN}/data/wordpress
+      device: /home/${LOGIN}/data/${DB}
 
 secrets:
   db_password:
