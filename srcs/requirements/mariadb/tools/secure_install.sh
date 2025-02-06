@@ -1,14 +1,17 @@
 #!/bin/bash
 
+TMP_CNF=/root/.my.cnf
+DB_ROOT_PSWD_FILE=/run/secrets/db_root_password
+
 # Ensure the MySQL runtime directory exists and set correct permissions
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
 
 # Store root password securely in a temp config
-cat > /root/.my.cnf <<EOF
+cat > "$TMP_CNF" <<EOF
 [client]
 user="root"
-password="$(cat /run/secrets/db_root_password)"
+password="$(cat $DB_ROOT_PSWD_FILE)"
 EOF
 chmod 600 /root/.my.cnf
 
@@ -20,7 +23,7 @@ until mysqladmin ping --silent; do
 done
 
 # Secure MariaDB
-DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+DB_ROOT_PASSWORD=$(cat $DB_ROOT_PSWD_FILE)
 mysql --defaults-file=/root/.my.cnf -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('${DB_ROOT_PASSWORD}');"
 mysql --defaults-file=/root/.my.cnf -e "DELETE FROM mysql.user WHERE User='';"
 # Disable Root Login from Remote Hosts
