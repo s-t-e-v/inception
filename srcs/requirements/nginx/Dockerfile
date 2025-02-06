@@ -13,4 +13,5 @@ COPY test.html /var/${DOMAIN_NAME}/index.html
 
 EXPOSE 443
 
+# TODO run nginx as a non-root user
 CMD ["nginx", "-g", "daemon off;"]
