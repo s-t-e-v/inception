@@ -8,7 +8,7 @@ services:
     ports:
       - "443:443"
     networks:
-      - docker_network
+      - front_end
     restart: always
   mariadb:
     build:
@@ -17,7 +17,7 @@ services:
       secrets:
         - db_root_password
     networks:
-      - docker_network
+      - back_end
     volumes:
       - wordpress_db:/var/lib/mysql
     secrets:
@@ -25,7 +25,8 @@ services:
     restart: always
 
 networks:
-  docker_network:
+  front_end:
+  back_end:
 
 volumes:
  wordpress_db:
