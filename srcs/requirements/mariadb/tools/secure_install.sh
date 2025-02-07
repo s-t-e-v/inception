@@ -1,7 +1,6 @@
 #!/bin/bash
 
 TMP_CNF=/root/.my.cnf
-DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
 # Ensure the MySQL runtime directory exists and set correct permissions
 mkdir -p /run/mysqld

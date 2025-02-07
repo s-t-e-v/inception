@@ -8,9 +8,9 @@ COPY tools/secure_install.sh /usr/local/bin/secure_install.sh
 COPY conf/mariadb.cnf /etc/mysql/mariadb.cnf
 
 # Run setup as root
-# TODO: DRY: make an environment variable for /root/.my.cnf inside secure_install.sh
-# TODO: DRY: make an environment variable for cat /run/secrets/db_root_password inside secure_install.sh
 RUN --mount=type=secret,id=db_root_password \
+    DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password) && \
+    export DB_ROOT_PASSWORD && \
     bash secure_install.sh
 
 # Expose MariaDB port
