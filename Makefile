@@ -9,7 +9,7 @@ up: prepare
 	docker compose -f $(COMPOSE_FILE) up --build $(ARGS)
 
 prepare:
-	@mkdir -p $(DATA_DIR)/$(DB)
+	@mkdir -p $(DATA_DIR)/wordpress_db
 
 stop:
 	docker compose -f $(COMPOSE_FILE) stop
