@@ -1,4 +1,8 @@
 #!/bin/bash
+set -e # Exit on error
+
+# mount secret
+DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
 TMP_CNF=/root/.my.cnf
 
@@ -34,3 +38,6 @@ mysqladmin --defaults-file="$TMP_CNF" shutdown
 
 # Remove the password file immediately after setup
 rm -f "$TMP_CNF"
+
+# Start mysqld daemon
+mysqld

@@ -14,8 +14,6 @@ services:
     build:
       context: requirements/mariadb
       dockerfile: Dockerfile
-      secrets:
-        - db_root_password
     networks:
       - back_end
     volumes:
