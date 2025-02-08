@@ -19,6 +19,7 @@ services:
     volumes:
       - wordpress_db:/var/lib/mysql
     secrets:
+      - db_password
       - db_root_password
     restart: always
   wordpress:

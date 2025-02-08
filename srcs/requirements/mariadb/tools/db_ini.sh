@@ -1,43 +1,31 @@
 #!/bin/bash
 set -e # Exit on error
 
-# mount secret
+# CREDENTIALS
+DB_PASSWORD=$(cat /run/secrets/db_password)
 DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
-
-TMP_CNF=/root/.my.cnf
 
 # Ensure the MySQL runtime directory exists and set correct permissions
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
 
-# Store root password securely in a temp config
-cat > "$TMP_CNF" <<EOF
-[client]
-user="root"
-password="${DB_ROOT_PASSWORD}"
+INIT_DB=/run/mysqld/init.sql
+
+# Build initialization script
+cat > "$INIT_DB" <<EOF
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASSWORD';
+DELETE FROM mysql.user WHERE User='';
+-- Disable Root Login from Remote Hosts
+DELETE FROM mysql.user WHERE User='root' AND Host='%';
+DROP DATABASE IF EXISTS test;
+FLUSH PRIVILEGES;
 EOF
-chmod 600 "$TMP_CNF"
 
-mysqld&
+# Initialize MariaDB with the SQL file
+mysqld --socket=/run/mysqld/mysqld.sock --init-file="$INIT_DB"
 
-# Wait for MariaDB to be fully ready
-until mysqladmin ping --silent; do
-    sleep 1
-done
+# Cleanup
+rm -f "$INIT_DB"
 
-# Secure MariaDB
-mysql --defaults-file="$TMP_CNF" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASSWORD';"
-mysql --defaults-file="$TMP_CNF" -e "DELETE FROM mysql.user WHERE User='';"
-# Disable Root Login from Remote Hosts
-mysql --defaults-file="$TMP_CNF" -e "DELETE FROM mysql.user WHERE User='root' AND Host='%';"
-mysql --defaults-file="$TMP_CNF" -e "DROP DATABASE IF EXISTS test;"
-mysql --defaults-file="$TMP_CNF" -e "FLUSH PRIVILEGES;"
-
-# Stop MariaDB after securing it
-mysqladmin --defaults-file="$TMP_CNF" shutdown
-
-# Remove the password file immediately after setup
-rm -f "$TMP_CNF"
-
-# Start mysqld daemon
-mysqld
+# Start mysqld daemon as mysql user
+exec mysqld
