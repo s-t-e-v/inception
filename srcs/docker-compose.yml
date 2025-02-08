@@ -23,6 +23,16 @@ services:
     secrets:
       - db_root_password
     restart: always
+  wordpress:
+    build:
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    networks:
+      - front_end
+      - back_end
+    # volumes:
+    #   - wordpress:
+    # restart: always
 
 networks:
   front_end:
@@ -35,6 +45,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: /home/${LOGIN}/data/wordpress_db
+#  wordpress:
+#     driver: local
+#     driver_opts:
+#       type: 'none'
+#       o: 'bind'
+#       device: /home/${LOGIN}/data/wordpress
 
 secrets:
   db_password:
