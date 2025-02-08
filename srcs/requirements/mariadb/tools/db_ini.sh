@@ -13,9 +13,10 @@ INIT_DB=/run/mysqld/init.sql
 
 # Build initialization script
 cat > "$INIT_DB" <<EOF
+-- Secure initialization
 ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASSWORD';
+ALTER USER 'mysql'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
 DELETE FROM mysql.user WHERE User='';
--- Disable Root Login from Remote Hosts
 DELETE FROM mysql.user WHERE User='root' AND Host='%';
 DROP DATABASE IF EXISTS test;
 FLUSH PRIVILEGES;
