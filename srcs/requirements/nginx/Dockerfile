@@ -17,4 +17,4 @@ COPY test.html /var/${FQDN}/index.html
 
 EXPOSE 443
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT [ "nginx", "-g", "daemon off;"]
