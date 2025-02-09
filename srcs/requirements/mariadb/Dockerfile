@@ -1,7 +1,8 @@
 FROM debian:bullseye
 
 # Install MariaDB
-RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y mariadb-server && rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 
 # Copy the configuration fiie
 COPY conf/mariadb.cnf /etc/mysql/mariadb.cnf

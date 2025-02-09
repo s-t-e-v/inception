@@ -18,6 +18,11 @@ services:
       - back_end
     volumes:
       - wordpress_db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+    env_file:
+      - path: .env
     secrets:
       - db_password
       - db_root_password

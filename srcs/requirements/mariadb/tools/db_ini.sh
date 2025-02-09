@@ -2,31 +2,45 @@
 set -e # Exit on error
 
 # CREDENTIALS
-DB_PASSWORD=$(cat /run/secrets/db_password)
-DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+MYSQL_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
+MYSQL_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
 
-# Ensure the MySQL runtime directory exists and set correct permissions
-mkdir -p /run/mysqld
-chown mysql:mysql /run/mysqld
+# Store root password securely in a temp config
+TMP_CNF=/root/.my.cnf
+cat > "$TMP_CNF" <<EOF
+[client]
+user="root"
+password="${MYSQL_ROOT_PASSWORD}"
+EOF
+chmod 600 "$TMP_CNF"
 
-INIT_DB=/run/mysqld/init.sql
+# Start MySQL temporarily
+mysqld&
 
-# Build initialization script
-cat > "$INIT_DB" <<EOF
+# Wait for MariaDB to be fully ready
+until mysqladmin ping --silent; do
+    sleep 1
+done
+
+# Secure and configure MariaDB
+mysql <<EOF
 -- Secure initialization
-ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASSWORD';
-ALTER USER 'mysql'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
 DELETE FROM mysql.user WHERE User='';
 DELETE FROM mysql.user WHERE User='root' AND Host='%';
 DROP DATABASE IF EXISTS test;
+-- Wordpress setup
+CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
+GRANT ALL ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
+-- Update privileges
 FLUSH PRIVILEGES;
 EOF
 
-# Initialize MariaDB with the SQL file
-mysqld --socket=/run/mysqld/mysqld.sock --init-file="$INIT_DB"
+# Stop MariaDB after configuration
+mysqladmin shutdown
 
-# Cleanup
-rm -f "$INIT_DB"
+# Remove the password file immediately after setup
+rm -f "$TMP_CNF"
 
-# Start mysqld daemon as mysql user
+# Start MariaDB normally in the foreground
 exec mysqld
