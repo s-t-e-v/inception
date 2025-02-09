@@ -23,11 +23,20 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
     env_file:
       - path: .env
+    healthcheck:
+      test: ["CMD", "/bin/sh", "-c", "/healthcheck.sh"]
+      interval: 2s
+      retries: 10
+      start_period: 4s
+      timeout: 20s
     secrets:
       - db_password
       - db_root_password
     restart: always
   wordpress:
+    depends_on:
+      mariadb:
+        condition: service_healthy
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile

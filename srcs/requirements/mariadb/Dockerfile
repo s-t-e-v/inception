@@ -10,6 +10,11 @@ COPY conf/mariadb.cnf /etc/mysql/mariadb.cnf
 # Copy the initialization script
 COPY tools/db_ini.sh /usr/local/bin/db_ini.sh
 
+# Copy the health check script
+COPY tools/healthcheck.sh /healthcheck.sh
+RUN chmod +x /healthcheck.sh
+
+
 # Expose MariaDB port
 EXPOSE 3306
 
