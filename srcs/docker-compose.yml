@@ -62,6 +62,7 @@ services:
       - credentials
     restart: always
 
+# TODO: you really should stick to only one network
 networks:
   front_end:
   back_end:
