@@ -10,6 +10,7 @@ RUN apt update && apt install -y nginx && apt install -y openssl && apt-get inst
     mkdir -p /var/${FQDN}
 
 COPY conf/nginx.conf /tmp/nginx.conf
+# TODO: Find a way to parameterized nginx.conf without envsusbst, similar to wordpress
 RUN envsubst '$FQDN' < /tmp/nginx.conf > ${CONF_DIR}/nginx.conf && rm /tmp/nginx.conf
 
 
