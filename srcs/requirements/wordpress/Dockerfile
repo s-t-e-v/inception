@@ -14,17 +14,20 @@ RUN apt update && \
     apt install -y php php-cli php-mysql php-curl php-gd php-intl php-fpm && \
     rm -rf /var/lib/apt/lists/*
 
-# Download and extract WordPress
-RUN mkdir -p /var/www/html && \
-    curl -o /tmp/wordpress.zip https://wordpress.org/latest.zip && \
-    unzip /tmp/wordpress.zip -d /var/www/html && \
-    rm /tmp/wordpress.zip
+RUN mkdir -p /var/www/html
+
+WORKDIR /var/www/html
+
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp-cli && \
+    wp-cli core download --allow-root
+ 
+COPY tools/wp_ini.sh /usr/local/bin/wp_ini.sh
 
 # Expose PHP-FPM port
 EXPOSE 9000
 
-ENTRYPOINT [ "php" ]
-CMD [ "-v" ]
+ENTRYPOINT [ "bash", "wp_ini.sh"]
 # Start PHP-FPM in the foreground
-# ENTRYPOINT [ "php-fpm" ]
-# CMD [ "-F" ]
+# ENTRYPOINT [ "php-fpm", "-F" ]
