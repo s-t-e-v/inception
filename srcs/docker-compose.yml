@@ -1,5 +1,7 @@
 services:
   nginx:
+    depends_on:
+     - wordpress
     build:
       context: requirements/nginx
       args:
@@ -23,6 +25,7 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
     env_file:
       - path: .env
+    # TODO: healthcehck or let restart the wordpress restart until mariadb is ready?
     healthcheck:
       test: ["CMD", "/bin/sh", "-c", "/healthcheck.sh"]
       interval: 2s
@@ -55,7 +58,7 @@ services:
     secrets:
       - db_password
       - credentials
-    # restart: always
+    restart: always
 
 networks:
   front_end:
