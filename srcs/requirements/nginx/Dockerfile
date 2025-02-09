@@ -13,9 +13,6 @@ COPY conf/nginx.conf /tmp/nginx.conf
 # TODO: Find a way to parameterized nginx.conf without envsusbst, similar to wordpress
 RUN envsubst '$FQDN' < /tmp/nginx.conf > ${CONF_DIR}/nginx.conf && rm /tmp/nginx.conf
 
-
-COPY test.html /var/${FQDN}/index.html
-
 EXPOSE 443
 
 ENTRYPOINT [ "nginx", "-g", "daemon off;"]
