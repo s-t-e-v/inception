@@ -10,7 +10,7 @@ services:
     ports:
       - "443:443"
     networks:
-      - front_end
+      - inception
     volumes:
       - wordpress:/var/www/html
     restart: always
@@ -19,7 +19,7 @@ services:
       context: requirements/mariadb
       dockerfile: Dockerfile
     networks:
-      - back_end
+      - inception
     volumes:
       - wordpress_db:/var/lib/mysql
     environment:
@@ -46,8 +46,7 @@ services:
       context: requirements/wordpress
       dockerfile: Dockerfile
     networks:
-      - front_end
-      - back_end
+      - inception
     volumes:
       - wordpress:/var/www/html
     environment:
@@ -62,10 +61,8 @@ services:
       - credentials
     restart: always
 
-# TODO: you really should stick to only one network
 networks:
-  front_end:
-  back_end:
+  inception:
 
 volumes:
  wordpress_db:
