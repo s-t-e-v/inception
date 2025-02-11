@@ -4,15 +4,16 @@ services:
      - wordpress
     build:
       context: requirements/nginx
-      args:
-        - FQDN=${LOGIN}.${DOMAIN_NAME}
       dockerfile: Dockerfile
     ports:
       - "443:443"
     networks:
       - inception_network
     volumes:
-      - wordpress_files:/var/www/html
+      - wordpress_files:${WEB_ROOT}
+    environment:
+      - FQDN=${LOGIN}.${DOMAIN_NAME}
+    env_file: .env
     restart: always
   mariadb:
     build:
@@ -25,8 +26,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
-    env_file:
-      - path: .env
+    env_file: .env
     healthcheck:
       test: ["CMD", "/bin/sh", "-c", "/healthcheck.sh"]
       interval: 2s
@@ -44,17 +44,18 @@ services:
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile
+      args:
+        - WEB_ROOT=${WEB_ROOT}
     networks:
       - inception_network
     volumes:
-      - wordpress_files:/var/www/html
+      - wordpress_files:${WEB_ROOT}
     environment:
       - WORDPRESS_DB_HOST=mariadb:3306
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
       - WORDPRESS_CREDENTIALS_FILE=/run/secrets/credentials
       - FQDN=${LOGIN}.${DOMAIN_NAME}
-    env_file:
-      - path: .env
+    env_file: .env
     secrets:
       - db_password
       - credentials
