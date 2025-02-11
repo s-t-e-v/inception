@@ -1,24 +1,23 @@
 FROM debian:bullseye
 
+ARG WEB_ROOT
+
 # TODO: optimise layers + maybe remove some dependancies
 # Install dependencies in a single layer to optimize caching and reduce image size
 RUN apt update && \
     apt install -y \
         curl \
-        unzip \
         software-properties-common \
         ca-certificates \
         lsb-release \
         apt-transport-https && \
     curl -sSL https://packages.sury.org/php/README.txt | bash -x
-RUN apt update && apt install -y php
-RUN apt install -y  php-mysql php-mbstring php-bcmath php-zip php-gd php-curl php-xml
-RUN apt install php-fpm -y && \
+RUN apt update && apt install -y php php-mysql php-fpm && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /var/www/html
+RUN mkdir -p ${WEB_ROOT}
 
-WORKDIR /var/www/html
+WORKDIR ${WEB_ROOT}
 
 # Install wordpress wp-cli
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
