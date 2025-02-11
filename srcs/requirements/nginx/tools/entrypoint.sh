@@ -1,5 +1,5 @@
 #!/bin/bash/
-set -e
+set -e # exit on error
 
 # Generate ssl private key and contract
 echo "Generating SSL certificate..."
@@ -21,4 +21,5 @@ envsubst '$FQDN $WEB_ROOT' < "$CONF_DIR"/nginx.conf.template > "$CONF_DIR"/nginx
 # Validate the configuration
 nginx -t
 
+# Start nginx
 exec nginx -g 'daemon off;'
