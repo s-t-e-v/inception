@@ -12,7 +12,7 @@ chmod 600 ${CONF_DIR}/${FQDN}.key
 chmod 644 ${CONF_DIR}/${FQDN}.crt
 
 # Generate nginx.conf from template and environment variables
-envsubst '$FQDN $WEB_ROOT' < "$CONF_DIR"/nginx.conf.template > "$CONF_DIR"/nginx.conf
+envsubst '$FQDN $WEB_ROOT' < "$CONF_DIR"/"$CONF_TEMPLATE" > "$CONF_DIR"/nginx.conf
 
 # Validate the configuration
 nginx -t
