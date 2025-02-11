@@ -10,7 +10,7 @@ up: prepare
 
 prepare:
 	@mkdir -p $(DATA_DIR)/wordpress_db
-	@mkdir -p $(DATA_DIR)/wordpress
+	@mkdir -p $(DATA_DIR)/wordpress_files
 
 stop:
 	docker compose -f $(COMPOSE_FILE) stop

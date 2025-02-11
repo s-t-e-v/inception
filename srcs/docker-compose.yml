@@ -12,7 +12,7 @@ services:
     networks:
       - inception
     volumes:
-      - wordpress:/var/www/html
+      - wordpress_files:/var/www/html
     restart: always
   mariadb:
     build:
@@ -48,7 +48,7 @@ services:
     networks:
       - inception
     volumes:
-      - wordpress:/var/www/html
+      - wordpress_files:/var/www/html
     environment:
       - WORDPRESS_DB_HOST=mariadb:3306
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
@@ -71,12 +71,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: /home/${LOGIN}/data/wordpress_db
- wordpress:
+ wordpress_files:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /home/${LOGIN}/data/wordpress
+      device: /home/${LOGIN}/data/wordpress_files
 
 secrets:
   db_password:
