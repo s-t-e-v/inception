@@ -10,7 +10,7 @@ services:
     ports:
       - "443:443"
     networks:
-      - inception
+      - inception_network
     volumes:
       - wordpress_files:/var/www/html
     restart: always
@@ -19,7 +19,7 @@ services:
       context: requirements/mariadb
       dockerfile: Dockerfile
     networks:
-      - inception
+      - inception_network
     volumes:
       - wordpress_db:/var/lib/mysql
     environment:
@@ -27,7 +27,6 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
     env_file:
       - path: .env
-    # TODO: healthcehck or let restart the wordpress restart until mariadb is ready?
     healthcheck:
       test: ["CMD", "/bin/sh", "-c", "/healthcheck.sh"]
       interval: 2s
@@ -46,7 +45,7 @@ services:
       context: requirements/wordpress
       dockerfile: Dockerfile
     networks:
-      - inception
+      - inception_network
     volumes:
       - wordpress_files:/var/www/html
     environment:
@@ -62,7 +61,7 @@ services:
     restart: always
 
 networks:
-  inception:
+  inception_network:
 
 volumes:
  wordpress_db:
