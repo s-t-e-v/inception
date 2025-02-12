@@ -5,14 +5,14 @@ services:
     build:
       context: requirements/nginx
       dockerfile: Dockerfile
+      args:
+        - FQDN=${LOGIN}.${DOMAIN_NAME}
     ports:
       - "443:443"
     networks:
       - inception_network
     volumes:
       - wordpress_files:${WEB_ROOT}
-    environment:
-      - FQDN=${LOGIN}.${DOMAIN_NAME}
     env_file: .env
     restart: always
   mariadb:
