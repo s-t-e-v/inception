@@ -5,14 +5,14 @@ ARG WEB_ROOT
 # TODO: optimise layers + maybe remove some dependancies
 # Install dependencies in a single layer to optimize caching and reduce image size
 RUN apt update && \
-    apt install -y \
+    apt install -y --no-install-recommends \
         curl \
         software-properties-common \
         ca-certificates \
         lsb-release \
         apt-transport-https && \
     curl -sSL https://packages.sury.org/php/README.txt | bash -x
-RUN apt update && apt install -y php php-mysql php-fpm && \
+RUN apt update && apt install -y --no-install-recommends php php-mysql php-fpm && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p ${WEB_ROOT}

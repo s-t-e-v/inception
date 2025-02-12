@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e # Exit on error
 
+# Create necessary directrories & permissions setup
+mkdir -p /run/mysqld
+chown mysql:mysql /run/mysqld
+
 # CREDENTIALS
 MYSQL_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
 MYSQL_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
