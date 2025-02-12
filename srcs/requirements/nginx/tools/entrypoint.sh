@@ -16,7 +16,6 @@ if ! openssl req -newkey rsa:2048 \
     exit 1
 fi
 
-chown root:root "${CONF_DIR}/${FQDN}.key"
 chmod 600 "${CONF_DIR}/${FQDN}.key"
 chmod 644 "${CONF_DIR}/${FQDN}.crt"
 

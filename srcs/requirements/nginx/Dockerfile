@@ -1,6 +1,3 @@
-# WARN: In production, Nginx should run as a non-root user, 
-#       but this is omitted for simplicity in this project
-
 FROM debian:bullseye
 
 ARG FQDN
@@ -15,7 +12,12 @@ RUN apt update && \
         nginx \
         openssl \
         gettext-base && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    # Create nginx (non-root) user
+    adduser --system --no-create-home --group nginx && \
+    # Set up directories and ownership for nginx user
+    mkdir -p /run/nginx && \
+    chown -R nginx:nginx /var/log/nginx /var/lib/nginx ${CONF_DIR} /run/nginx 
 
 # Set up nginx.conf
 COPY conf/${CONF_TEMPLATE} ${CONF_DIR}/${CONF_TEMPLATE}
@@ -28,4 +30,6 @@ COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 443
 
+# Run nginx as a non-root user
+USER nginx
 ENTRYPOINT ["bash", "entrypoint.sh" ]
