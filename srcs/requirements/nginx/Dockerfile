@@ -1,6 +1,10 @@
+# WARN: In production, Nginx should run as a non-root user, 
+#       but this is omitted for simplicity in this project
+
 FROM debian:bullseye
 
 ARG FQDN
+ARG WEB_ROOT
 
 ENV FQDN=${FQDN}
 ENV CONF_DIR=/etc/nginx
@@ -11,15 +15,15 @@ RUN apt update && \
         nginx \
         openssl \
         gettext-base && \
-    rm -rf /var/lib/apt/lists/* && \
-    # Generate SSL certificate
-    openssl req -newkey rsa:2048 -keyout ${CONF_DIR}/${FQDN}.key -x509 -days 90 -out ${CONF_DIR}/${FQDN}.crt -nodes -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${FQDN}" && \
-    chown root:root ${CONF_DIR}/${FQDN}.key && \
-    chmod 600 ${CONF_DIR}/${FQDN}.key && \
-    chmod 644 ${CONF_DIR}/${FQDN}.crt
+    rm -rf /var/lib/apt/lists/*
 
-
+# Set up nginx.conf
 COPY conf/${CONF_TEMPLATE} ${CONF_DIR}/${CONF_TEMPLATE}
+RUN envsubst '$FQDN $WEB_ROOT' \
+    < "$CONF_DIR"/"$CONF_TEMPLATE" \
+    > "$CONF_DIR"/nginx.conf
+
+# Copy entrypoint script
 COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 443
