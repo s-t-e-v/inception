@@ -21,7 +21,9 @@ RUN apt update && \
         php-fpm && \
     rm -rf /var/lib/apt/lists/* && \
     # Prepare necessary directories
-    mkdir -p ${WEB_ROOT} /run/php
+    mkdir -p ${WEB_ROOT} /run/php  /var/log/php-fpm
+
+RUN  chown -R www-data:www-data ${WEB_ROOT} /run/php /var/log/php-fpm
 
 WORKDIR ${WEB_ROOT}
 
@@ -33,9 +35,11 @@ chmod +x wp-cli.phar && \
     
 # Set up www.conf
 COPY conf/www.conf /tmp
+COPY conf/php-fpm.conf /tmp
 RUN PHP_VERSION=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;') && \
     echo "PHP_VERSION=${PHP_VERSION}" >> /etc/environment && \
-    mv /tmp/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+    mv /tmp/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/ && \
+    mv /tmp/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/
 
 # Set up entrypoint script
 COPY tools/entrypoint.sh /usr/local/bin
@@ -46,4 +50,5 @@ COPY tools/healthcheck.php /
 # Expose PHP-FPM port
 EXPOSE 9000
 
+USER www-data
 ENTRYPOINT [ "bash", "entrypoint.sh"]
