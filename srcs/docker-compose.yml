@@ -1,7 +1,8 @@
 services:
   nginx:
     depends_on:
-     - wordpress
+      wordpress:
+        condition: service_healthy
     build:
       context: requirements/nginx
       dockerfile: Dockerfile
@@ -58,6 +59,12 @@ services:
       - WORDPRESS_CREDENTIALS_FILE=/run/secrets/credentials
       - FQDN=${LOGIN}.${DOMAIN_NAME}
     env_file: .env
+    healthcheck:
+      test: SCRIPT_FILENAME=/healthcheck.php QUERY_STRING=VAR1 DOCUMENT_ROOT=${WEB_ROOT} REQUEST_METHOD=GET cgi-fcgi -bind -connect wordpress:9000 | grep 'OK' || exit 1
+      interval: 4s
+      retries: 20
+      start_period: 6s
+      timeout: 30s
     secrets:
       - db_password
       - credentials
