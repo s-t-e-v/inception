@@ -6,13 +6,13 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the configuration fiie
-COPY conf/mariadb.cnf /etc/mysql/mariadb.cnf
+COPY conf/mariadb.cnf /etc/mysql/
 
-# Copy the initialization script
-COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+# Set up the entrypoint script
+COPY tools/entrypoint.sh /usr/local/bin
 
-# Copy the health check script
-COPY tools/healthcheck.sh /healthcheck.sh
+# Set up the health check script
+COPY tools/healthcheck.sh /
 RUN chmod +x /healthcheck.sh
 
 # Expose MariaDB port

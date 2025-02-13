@@ -1,24 +1,25 @@
 #!/bin/bash
 set -e # Exit on error
 
-set -a
-# Detect PHP version
-PHP_VERSION=$(php -v | grep -oP 'PHP \K[0-9]+\.[0-9]+')
-set +a
+# Retrieve environment variables from build time
+source /etc/environment
 
-# Create wp-config.php if it doesn't exist
+# Install Wordpress if wp-config.php doesn't exist
 if [ ! -f wp-config.php ]; then
-    echo "Configuring wordpress for the first time..."
+    echo "🏗️  Setting up Wordpress..."
+    # Load credentials
     set -a
     MYSQL_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
     source "$WORDPRESS_CREDENTIALS_FILE"
     set +a
+    # Create the wp-config.php file
     wp-cli config create --allow-root \
         --dbname="$MYSQL_DATABASE" \
         --dbuser="$MYSQL_USER" \
         --dbpass="$MYSQL_PASSWORD" \
         --dbhost="$WORDPRESS_DB_HOST"
 
+    # Install Wordpress
     wp-cli core install --allow-root \
         --url="$FQDN" \
         --title="$WP_BLOG_TITLE" \
@@ -26,6 +27,7 @@ if [ ! -f wp-config.php ]; then
         --admin_password="$WP_ADMIN_PASSWORD" \
         --admin_email="$WP_ADMIN_MAIL"
 
+    # Add the wordpress user
     wp-cli user create --allow-root \
         "$WP_USER" \
         "$WP_USER_MAIL" \
@@ -34,28 +36,9 @@ if [ ! -f wp-config.php ]; then
 
     # Set permalink structure
     wp-cli rewrite structure '/%year%/%monthnum%/%day%/%postname%/' --allow-root
-    echo "First time configuration done."
+    echo "Wordpress is ready!  🚀"
 fi
 
 # Start PHP-FPM in the foreground
 echo "Starting php-fpm..."
 exec php-fpm${PHP_VERSION} -F
-
-
-# php-fpm${PHP_VERSION}
-
-# sleep 4
-
-# # SCRIPT_FILENAME=/ping.php \
-# # REQUEST_METHOD=GET \
-# # cgi-fcgi -bind -connect wordpress:9000 || echo "KO"
-
-# SCRIPT_NAME=/healthcheck.php \
-# SCRIPT_FILENAME=/healthcheck.php \
-# QUERY_STRING=VAR1 \
-# DOCUMENT_ROOT=/var/www/html/ \
-# REQUEST_METHOD=GET \
-# cgi-fcgi -bind -connect wordpress:9000 
-# # cgi-fcgi -bind -connect wordpress:9000 | grep 'OK' || echo "KO"
-
-# tail -f

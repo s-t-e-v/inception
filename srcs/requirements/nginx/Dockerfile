@@ -20,13 +20,13 @@ RUN apt update && \
     chown -R nginx:nginx /var/log/nginx /var/lib/nginx ${CONF_DIR} /run/nginx 
 
 # Set up nginx.conf
-COPY conf/${CONF_TEMPLATE} ${CONF_DIR}/${CONF_TEMPLATE}
+COPY conf/${CONF_TEMPLATE} ${CONF_DIR}
 RUN envsubst '$FQDN $WEB_ROOT' \
     < "$CONF_DIR"/"$CONF_TEMPLATE" \
     > "$CONF_DIR"/nginx.conf
 
 # Copy entrypoint script
-COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY tools/entrypoint.sh /usr/local/bin
 
 EXPOSE 443
 

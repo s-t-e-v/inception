@@ -2,7 +2,7 @@
 set -e # exit on error
 
 # Generate SSL private key and contract
-echo "Generating SSL certificate..."
+echo "📃  Generating SSL certificate..."
 
 SUBJECT="/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${FQDN}"
 
@@ -12,7 +12,7 @@ if ! openssl req -newkey rsa:2048 \
     -out "${CONF_DIR}/${FQDN}.crt" \
     -nodes \
     -subj "$SUBJECT"; then
-    echo "Failed to generate SSL certificate"
+    echo "❌  Failed to generate SSL certificate"
     exit 1
 fi
 
