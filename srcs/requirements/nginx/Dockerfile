@@ -25,11 +25,12 @@ RUN envsubst '$FQDN $WEB_ROOT' \
     < "$CONF_DIR"/"$CONF_TEMPLATE" \
     > "$CONF_DIR"/nginx.conf
 
-# Copy entrypoint script
+# Set up entrypoint script
 COPY tools/entrypoint.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 443
 
 # Run nginx as a non-root user
 USER nginx
-ENTRYPOINT ["bash", "entrypoint.sh" ]
+ENTRYPOINT [ "entrypoint.sh" ]

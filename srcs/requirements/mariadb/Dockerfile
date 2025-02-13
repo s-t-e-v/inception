@@ -10,6 +10,7 @@ COPY conf/mariadb.cnf /etc/mysql/
 
 # Set up the entrypoint script
 COPY tools/entrypoint.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Set up the health check script
 COPY tools/healthcheck.sh /
@@ -19,4 +20,4 @@ RUN chmod +x /healthcheck.sh
 EXPOSE 3306
 
 # Run MariaDB
-ENTRYPOINT [ "bash", "entrypoint.sh" ]
+ENTRYPOINT [ "entrypoint.sh" ]
