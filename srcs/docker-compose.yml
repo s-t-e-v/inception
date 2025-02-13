@@ -9,7 +9,6 @@ services:
       args:
         - FQDN=${LOGIN}.${DOMAIN_NAME}
         - WEB_ROOT=${WEB_ROOT}
-        - CSP_IMG_SRC=${CSP_IMG_SRC} # [optional] For getting website images from trusted sources
     ports:
       - "443:443"
     networks:

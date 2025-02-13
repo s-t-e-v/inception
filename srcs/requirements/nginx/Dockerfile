@@ -2,7 +2,6 @@ FROM debian:bullseye
 
 ARG FQDN
 ARG WEB_ROOT
-ARG CSP_IMG_SRC # [optional] For getting website images from trusted sources
 
 ENV FQDN=${FQDN}
 ENV CONF_DIR=/etc/nginx
@@ -22,7 +21,7 @@ RUN apt update && \
 
 # Set up nginx.conf
 COPY conf/${CONF_TEMPLATE} ${CONF_DIR}/${CONF_TEMPLATE}
-RUN envsubst '$FQDN $WEB_ROOT $CSP_IMG_SRC' \
+RUN envsubst '$FQDN $WEB_ROOT' \
     < "$CONF_DIR"/"$CONF_TEMPLATE" \
     > "$CONF_DIR"/nginx.conf
 
