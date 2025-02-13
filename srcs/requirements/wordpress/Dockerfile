@@ -14,6 +14,8 @@ RUN apt update && \
     curl -sSL https://packages.sury.org/php/README.txt | bash -x
 RUN apt update && apt install -y --no-install-recommends php php-mysql php-fpm && \
     rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y --no-install-recommends sendmail && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p ${WEB_ROOT}
 
