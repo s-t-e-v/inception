@@ -16,6 +16,11 @@ services:
     volumes:
       - wordpress_files:${WEB_ROOT}
     env_file: .env
+    healthcheck:
+      test: service nginx status || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: always
   mariadb:
     build:
