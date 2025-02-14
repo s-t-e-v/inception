@@ -10,7 +10,6 @@ RUN apt update && \
         ca-certificates \
         lsb-release \
         apt-transport-https \
-        sendmail \
         gettext-base \
         libfcgi0ldbl && \
     curl -sSL https://packages.sury.org/php/README.txt | bash -x && \
@@ -58,5 +57,6 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 9000
 
+# Run wordpress+php-fpm as a non-root user
 USER www-data
 ENTRYPOINT [ "entrypoint.sh" ]

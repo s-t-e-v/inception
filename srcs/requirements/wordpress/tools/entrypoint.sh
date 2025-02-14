@@ -13,29 +13,37 @@ if [ ! -f wp-config.php ]; then
     source "$WORDPRESS_CREDENTIALS_FILE"
     set +a
     # Create the wp-config.php file
-    wp-cli config create \
+    wp config create \
         --dbname="$MYSQL_DATABASE" \
         --dbuser="$MYSQL_USER" \
         --dbpass="$MYSQL_PASSWORD" \
         --dbhost="$WORDPRESS_DB_HOST"
 
     # Install Wordpress
-    wp-cli core install \
+    wp core install \
         --url="$FQDN" \
         --title="$WP_BLOG_TITLE" \
         --admin_user="$WP_ADMIN" \
         --admin_password="$WP_ADMIN_PASSWORD" \
-        --admin_email="$WP_ADMIN_MAIL"
+        --admin_email="$WP_ADMIN_MAIL" \
+        --skip-email
 
     # Add the wordpress user
-    wp-cli user create \
+    wp user create \
         "$WP_USER" \
         "$WP_USER_MAIL" \
         --user_pass="$WP_USER_PASSWORD" \
         --role=author
 
     # Set permalink structure
-    wp-cli rewrite structure '/%year%/%monthnum%/%day%/%postname%/'
+    wp rewrite structure '/%year%/%monthnum%/%day%/%postname%/'
+
+    # Disable Email Notifications for Comments
+    wp option update comments_notify 0
+
+    # Disable Email Notifications for Comment Moderation
+    wp option update moderation_notify 0
+
     echo "Wordpress is ready!  🚀"
 fi
 
