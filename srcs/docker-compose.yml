@@ -48,6 +48,8 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile
@@ -64,6 +66,8 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
       - WORDPRESS_CREDENTIALS_FILE=/run/secrets/credentials
       - FQDN=${LOGIN}.${DOMAIN_NAME}
+      # Bonus
+      - REDIS_PASSWORD_FILE=/run/secrets/redis_password
     env_file: .env
     healthcheck:
       test: >
@@ -77,6 +81,8 @@ services:
     secrets:
       - db_password
       - credentials
+      # Bonus
+      - redis_password
     restart: always
   # Bonus
   redis:
@@ -85,6 +91,16 @@ services:
       dockerfile: Dockerfile
     networks:
       - inception_network
+    environment:
+      - REDIS_PASSWORD_FILE=/run/secrets/redis_password
+    healthcheck:
+      test: redis-cli ping | grep "PONG" || exit 1
+      interval: 2s
+      retries: 10
+      start_period: 4s
+      timeout: 20s
+    secrets:
+      - redis_password
 
 networks:
   inception_network:
@@ -110,3 +126,6 @@ secrets:
     file: ../secrets/db_root_password.txt
   credentials:
     file: ../secrets/credentials.txt
+  # Bonus
+  redis_password:
+    file: ../secrets/redis_password.txt

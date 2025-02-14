@@ -7,6 +7,8 @@ if [ ! -f wp-config.php ]; then
     # Load credentials
     set -a
     MYSQL_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
+    # ---- Bonus
+    REDIS_PASSWORD=$(cat "$REDIS_PASSWORD_FILE")
     source "$WORDPRESS_CREDENTIALS_FILE"
     set +a
     # Create the wp-config.php file
@@ -40,6 +42,16 @@ if [ ! -f wp-config.php ]; then
 
     # Disable Email Notifications for Comment Moderation
     wp option update moderation_notify 0
+
+    # ----- BONUS -------
+    # Redis set up
+    wp config set WP_REDIS_HOST "redis" --quiet
+    wp config set WP_REDIS_PORT --raw "6379" --quiet
+    wp config set WP_REDIS_PASSWORD "$REDIS_PASSWORD" --quiet
+    wp config set WP_REDIS_MAXTTL --raw 3600 --quiet # Set the maximum TTL (time to live) for cached data in seconds
+    wp config set WP_REDIS_DISABLED --raw false --quiet
+    
+    wp plugin install redis-cache --activate
 
     echo "Wordpress is ready!  🚀"
 fi
