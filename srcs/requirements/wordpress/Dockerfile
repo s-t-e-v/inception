@@ -39,6 +39,9 @@ COPY conf/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/
 RUN sed -i 's/^error_log =.*/error_log = \/var\/log\/php-fpm\/php'"${PHP_VERSION}"'-fpm.log/' \
         /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
 
+# Update permission for the Web root folder
+RUN chown -R www-data:www-data .
+
 # Set up entrypoint and healthcheck
 COPY tools/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
