@@ -6,7 +6,7 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/* && \
     # Create necessary directrories & permissions setup
     mkdir -p /run/mysqld && \
-    chown mysql:mysql /run/mysqld
+    chown mysql:mysql /run/mysqld /var/log/mysql
 
 # Copy the configuration fiie
 COPY conf/mariadb.cnf /etc/mysql/
