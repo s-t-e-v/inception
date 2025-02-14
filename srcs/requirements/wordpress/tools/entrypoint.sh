@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e # Exit on error
 
-# Retrieve environment variables from build time
-source /etc/environment
-
 # Install Wordpress if wp-config.php doesn't exist
 if [ ! -f wp-config.php ]; then
     echo "🏗️  Setting up Wordpress..."
