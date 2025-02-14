@@ -2,7 +2,3 @@
 *.pdf
 .env
 secrets/
-
-# Temporary files
-default.conf
-test.html
