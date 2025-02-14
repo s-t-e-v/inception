@@ -78,6 +78,13 @@ services:
       - db_password
       - credentials
     restart: always
+  # Bonus
+  redis:
+    build:
+      context: requirements/bonus/redis
+      dockerfile: Dockerfile
+    networks:
+      - inception_network
 
 networks:
   inception_network:
