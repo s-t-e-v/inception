@@ -1,22 +1,9 @@
 #!/bin/bash
 set -e # Exit on error
 
-# Create necessary directrories & permissions setup
-mkdir -p /run/mysqld
-chown mysql:mysql /run/mysqld
-
 # CREDENTIALS
 MYSQL_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
 MYSQL_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
-
-# Store root password securely in a temp config
-TMP_CNF=/root/.my.cnf
-cat > "$TMP_CNF" <<EOF
-[client]
-user="root"
-password="${MYSQL_ROOT_PASSWORD}"
-EOF
-chmod 600 "$TMP_CNF"
 
 # Start MySQL temporarily
 mysqld&
@@ -42,9 +29,6 @@ EOF
 
 # Stop MariaDB after configuration
 mysqladmin shutdown
-
-# Remove the password file immediately after setup
-rm -f "$TMP_CNF"
 
 # Start MariaDB normally in the foreground
 exec mysqld
