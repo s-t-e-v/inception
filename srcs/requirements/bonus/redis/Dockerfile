@@ -4,9 +4,12 @@ RUN apt update && \
     apt install -y redis-server && \
     rm -rf /var/lib/apt/lists/*
 
-# Setup entrypoit script
+# Set up entrypoint script
 COPY tools/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set up redis.conf
+COPY conf/redis.conf /etc/redis/
 
 EXPOSE 6379
 

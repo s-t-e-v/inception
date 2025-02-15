@@ -9,4 +9,4 @@ sed -i "s/^requirepass.*/requirepass $REDIS_PASSWORD/" \
         /etc/redis/redis.conf
 
 
-exec redis-server
+exec redis-server /etc/redis/redis.conf
