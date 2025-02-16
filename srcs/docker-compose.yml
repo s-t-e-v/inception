@@ -92,6 +92,8 @@ services:
       dockerfile: Dockerfile
     networks:
       - inception_network
+    volumes:
+      - redis_dump:/var/lib/redis/
     environment:
       - REDIS_PASSWORD_FILE=/run/secrets/redis_password
     healthcheck:
@@ -107,18 +109,26 @@ networks:
   inception_network:
 
 volumes:
- wordpress_db:
+  wordpress_db:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
       device: /home/${LOGIN}/data/wordpress_db
- wordpress_files:
+  wordpress_files:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
       device: /home/${LOGIN}/data/wordpress_files
+  # Bonus
+  redis_dump:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/${LOGIN}/data/redis_dump
+
 
 secrets:
   db_password:
