@@ -53,8 +53,11 @@ if [ ! -f wp-config.php ]; then
     
     wp plugin install redis-cache --activate
 
+    wp redis enable
+
     echo "Wordpress is ready!  🚀"
 fi
+
 
 # Start PHP-FPM in the foreground
 echo "Starting php-fpm..."

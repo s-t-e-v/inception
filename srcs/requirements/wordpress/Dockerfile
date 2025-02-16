@@ -19,7 +19,9 @@ RUN apt update && \
         php${PHP_VERSION} \
         php${PHP_VERSION}-mysql \
         php${PHP_VERSION}-fpm \
-        php${PHP_VERSION}-cli && \
+        php${PHP_VERSION}-cli \
+        # Bonus
+        php${PHP_VERSION}-redis && \
     rm -rf /var/lib/apt/lists/*
 
 # Set up directories and permissions

@@ -48,6 +48,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      # Bonus
       redis:
         condition: service_healthy
     build:
@@ -94,7 +95,7 @@ services:
     environment:
       - REDIS_PASSWORD_FILE=/run/secrets/redis_password
     healthcheck:
-      test: redis-cli ping | grep "PONG" || exit 1
+      test: /healthcheck.sh
       interval: 2s
       retries: 10
       start_period: 4s
