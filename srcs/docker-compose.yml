@@ -50,7 +50,7 @@ services:
         condition: service_healthy
       # Bonus
       redis:
-        condition: service_healthy
+        condition: service_started
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile
@@ -104,6 +104,7 @@ services:
       timeout: 20s
     secrets:
       - redis_password
+    restart: always
 
 networks:
   inception_network:
