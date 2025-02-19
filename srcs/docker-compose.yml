@@ -105,6 +105,23 @@ services:
     secrets:
       - redis_password
     restart: always
+  vsftpd:
+    build:
+      context: requirements/bonus/vsftpd
+      dockerfile: Dockerfile
+    ports:
+      - '20:20'
+      - '21:21'
+    networks:
+      - inception_network
+    volumes:
+      - wordpress_files:${WEB_ROOT}
+    environment:
+      - VSFTPD_PASSWORD_FILE=/run/secrets/vsftpd_password
+      - LOGIN=${LOGIN}
+    secrets:
+      - vsftpd_password
+    restart: always
 
 networks:
   inception_network:
@@ -141,3 +158,5 @@ secrets:
   # Bonus
   redis_password:
     file: ../secrets/redis_password.txt
+  vsftpd_password:
+    file: ../secrets/vsftpd_password.txt
