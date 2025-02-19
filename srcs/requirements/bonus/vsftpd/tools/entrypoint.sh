@@ -5,12 +5,16 @@ set -a
 VSFTPD_PASSWORD=$(cat "${VSFTPD_PASSWORD_FILE}")
 set +a
 
+chown -R ftp:ftp /var/www/html
+
 VSFTPD_USER="$LOGIN"
 LOGIN_FILE=/etc/vsftpd/login.txt
 
 # Set login.txt file
 echo "$VSFTPD_USER" > "$LOGIN_FILE"
 echo "$VSFTPD_PASSWORD" >> "$LOGIN_FILE"
+echo "joe" >> "$LOGIN_FILE"
+echo "faux" >> "$LOGIN_FILE"
 echo "" >> "$LOGIN_FILE"
 
 
@@ -24,6 +28,12 @@ echo "write_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
 echo "anon_upload_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
 echo "anon_mkdir_write_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
 echo "anon_other_write_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
+
+echo "local_root=/var/www" > /etc/vsftpd/vsftpd_user_conf/joe
+echo "write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
+echo "anon_upload_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
+echo "anon_mkdir_write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
+echo "anon_other_write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
 
 echo "Starting vsftpd..."
 exec vsftpd /etc/vsftpd/vsftpd.conf
