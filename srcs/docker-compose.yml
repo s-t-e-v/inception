@@ -110,6 +110,8 @@ services:
       context: requirements/bonus/vsftpd
       dockerfile: Dockerfile
       args:
+        - FQDN=${LOGIN}.${DOMAIN_NAME}
+        - WEB_ROOT=${WEB_ROOT}
         - LOGIN=${LOGIN}
     ports:
       - '20:20'

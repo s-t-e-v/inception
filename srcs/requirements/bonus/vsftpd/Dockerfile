@@ -1,18 +1,24 @@
 FROM debian:bullseye
 
 ARG LOGIN
+ARG FQDN
+ARG WEB_ROOT
+
 ENV LOGIN=${LOGIN}
+ENV FQDN=${FQDN}
 
 # Install dependencies
 RUN apt update && \
     apt install -y --no-install-recommends \
         vsftpd \
         libpam-modules \
+        openssl \
         db-util && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /etc/vsftpd /etc/vsftpd/vsftpd_user_conf /var/run/vsftpd/empty
 RUN usermod -aG www-data ftp
+RUN mkdir -p /etc/ssl/private
 
 # Copy the configuration file
 COPY conf/vsftpd.conf /etc/vsftpd/

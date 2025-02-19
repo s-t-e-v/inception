@@ -35,5 +35,26 @@ echo "anon_upload_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
 echo "anon_mkdir_write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
 echo "anon_other_write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
 
+
+# TLS set up
+
+# Generate SSL private key and contract
+echo "📃  Generating SSL certificate..."
+
+SUBJECT="/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${FQDN}"
+
+if ! openssl req -newkey rsa:2048 \
+    -keyout /etc/ssl/private/vsftpd.key.pem \
+    -x509 -days 365 \
+    -out /etc/ssl/private/vsftpd.cert.pem \
+    -nodes \
+    -subj "$SUBJECT"; then
+    echo "❌  Failed to generate SSL certificate"
+    exit 1
+fi
+
+chmod 600 /etc/ssl/private/vsftpd.key.pem
+chmod 644 /etc/ssl/private/vsftpd.cert.pem
+
 echo "Starting vsftpd..."
 exec vsftpd /etc/vsftpd/vsftpd.conf
