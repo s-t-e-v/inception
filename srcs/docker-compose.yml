@@ -43,6 +43,8 @@ services:
     secrets:
       - db_password
       - db_root_password
+    # Bonus
+      - vsftpd_password
     restart: always
   wordpress:
     depends_on:

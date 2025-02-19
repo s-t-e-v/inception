@@ -8,10 +8,14 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /etc/vsftpd /etc/vsftpd/vsftd_user_conf
+RUN usermod -aG www-data ftp
 
-# Copy the configuration fiie
+# Copy the configuration file
 COPY conf/vsftpd.cnf /etc/vsftpd/
 RUN chmod 600 /etc/vsftpd/vsftpd.cnf
+
+# Copy the pam configuration file
+COPY conf/pam.d/vsftpd /etc/pam.d/
 
 # Copy txt2db script
 COPY tools/txt2db.sh /usr/local/bin
