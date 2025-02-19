@@ -114,6 +114,7 @@ services:
     ports:
       - '20:20'
       - '21:21'
+      - '40000-40100:40000-40100'
     networks:
       - inception_network
     volumes:
