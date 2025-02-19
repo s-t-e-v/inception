@@ -7,10 +7,11 @@ ENV LOGIN=${LOGIN}
 RUN apt update && \
     apt install -y --no-install-recommends \
         vsftpd \
+        libpam-modules \
         db-util && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /etc/vsftpd /etc/vsftpd/vsftpd_user_conf
+RUN mkdir -p /etc/vsftpd /etc/vsftpd/vsftpd_user_conf /var/run/vsftpd/empty
 RUN usermod -aG www-data ftp
 
 # Copy the configuration file
@@ -19,6 +20,9 @@ RUN chmod 600 /etc/vsftpd/vsftpd.conf
 
 # Copy the pam configuration file
 COPY conf/pam.d/vsftpd /etc/pam.d/
+
+# Copy the user_list file
+COPY /conf/user_list /etc/vsftpd/
 
 # Copy txt2db script
 COPY tools/txt2db.sh /usr/local/bin
