@@ -43,8 +43,6 @@ services:
     secrets:
       - db_password
       - db_root_password
-    # Bonus
-      - vsftpd_password
     restart: always
   wordpress:
     depends_on:
@@ -111,6 +109,8 @@ services:
     build:
       context: requirements/bonus/vsftpd
       dockerfile: Dockerfile
+      args:
+        - LOGIN=${LOGIN}
     ports:
       - '20:20'
       - '21:21'
