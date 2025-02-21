@@ -1,10 +1,9 @@
 FROM debian:bullseye
 
-ARG LOGIN
 ARG FQDN
-ARG WEB_ROOT
+ARG PASV_MIN_PORT
+ARG PASV_MAX_PORT
 
-ENV LOGIN=${LOGIN}
 ENV FQDN=${FQDN}
 
 # Install dependencies
@@ -23,7 +22,8 @@ RUN mkdir -p /etc/ssl/private
 # Copy the configuration file
 COPY conf/vsftpd.conf /etc/vsftpd/
 RUN chmod 600 /etc/vsftpd/vsftpd.conf
-
+RUN sed -i "s/^pasv_min_port=.*/pasv_min_port=$PASV_MIN_PORT/" /etc/vsftpd/vsftpd.conf && \
+    sed -i "s/^pasv_max_port=.*/pasv_max_port=$PASV_MAX_PORT/" /etc/vsftpd/vsftpd.conf
 # Copy the pam configuration file
 COPY conf/pam.d/vsftpd /etc/pam.d/
 
@@ -47,7 +47,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # RUN chmod +x /healthcheck.sh
 
 # Expose vsftpd ports
-EXPOSE 20 21
+EXPOSE 20 21 ${PASV_MIN_PORT}-${PASV_MAX_PORT}
 
 # Run vsftpd as a non-root user
 # USER vsftpd

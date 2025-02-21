@@ -5,9 +5,8 @@ set -a
 VSFTPD_PASSWORD=$(cat "${VSFTPD_PASSWORD_FILE}")
 set +a
 
-chown -R ftp:ftp /var/www/html
+chown -R ftp:ftp "${WEB_ROOT}"
 
-VSFTPD_USER="$LOGIN"
 LOGIN_FILE=/etc/vsftpd/login.txt
 
 # Set login.txt file
@@ -56,5 +55,5 @@ fi
 chmod 600 /etc/ssl/private/vsftpd.key.pem
 chmod 644 /etc/ssl/private/vsftpd.cert.pem
 
-echo "Starting vsftpd..."
+# echo "Starting vsftpd..."
 exec vsftpd /etc/vsftpd/vsftpd.conf
