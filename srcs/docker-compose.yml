@@ -3,12 +3,16 @@ services:
     depends_on:
       wordpress:
         condition: service_healthy
+      # Bonus
+      adminer:
+        condition: service_started
     build:
       context: requirements/nginx
       dockerfile: Dockerfile
       args:
         - FQDN=${LOGIN}.${DOMAIN_NAME}
         - WEB_ROOT=${WEB_ROOT}
+        - ADMINER_ROOT=${ADMINER_ROOT}
     init: true
     ports:
       - "443:443"
@@ -16,6 +20,8 @@ services:
       - inception_network
     volumes:
       - wordpress_files:${WEB_ROOT}
+      # Bonus
+      - adminer:${ADMINER_ROOT}
     env_file: .env
     healthcheck:
       test: service nginx status || exit 1
@@ -136,6 +142,34 @@ services:
     secrets:
       - vsftpd_password
     restart: always
+  adminer:
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    build:
+      context: requirements/bonus/adminer
+      dockerfile: Dockerfile
+      args:
+        - ADMINER_ROOT=${ADMINER_ROOT}
+        - ADMINER_VERSION=${ADMINER_VERSION}
+        - PHP_VERSION=${PHP_VERSION}
+    init: true
+    networks:
+      - inception_network
+    volumes:
+      - adminer:${ADMINER_ROOT}
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=mariadb:3306
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+    # healthcheck:
+    #   test: /healthcheck.sh
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
+    secrets:
+      - db_password
+    restart: always
 
 networks:
   inception_network:
@@ -160,6 +194,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: /home/${LOGIN}/data/redis_dump
+  adminer:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/${LOGIN}/data/adminer
 
 
 secrets:

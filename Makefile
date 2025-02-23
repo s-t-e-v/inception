@@ -13,6 +13,7 @@ prepare:
 	@mkdir -p $(DATA_DIR)/wordpress_files
 # 	Bonus
 	@mkdir -p $(DATA_DIR)/redis_dump
+	@mkdir -p $(DATA_DIR)/adminer
 
 stop:
 	docker compose -f $(COMPOSE_FILE) stop

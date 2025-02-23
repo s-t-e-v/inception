@@ -2,6 +2,8 @@ FROM debian:bullseye
 
 ARG FQDN
 ARG WEB_ROOT
+# Bonus
+ARG ADMINER_ROOT
 
 ENV FQDN=${FQDN}
 ENV CONF_DIR=/etc/nginx
@@ -21,7 +23,7 @@ RUN apt update && \
 
 # Set up nginx.conf
 COPY conf/${CONF_TEMPLATE} ${CONF_DIR}
-RUN envsubst '$FQDN $WEB_ROOT' \
+RUN envsubst '$FQDN $WEB_ROOT $ADMINER_ROOT' \
     < "$CONF_DIR"/"$CONF_TEMPLATE" \
     > "$CONF_DIR"/nginx.conf
 
