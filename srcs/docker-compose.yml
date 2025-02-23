@@ -110,10 +110,10 @@ services:
       context: requirements/bonus/vsftpd
       dockerfile: Dockerfile
       args:
+        - WEB_ROOT=${WEB_ROOT}
         - PASV_MIN_PORT=${PASV_MIN_PORT}
         - PASV_MAX_PORT=${PASV_MAX_PORT}
     ports:
-      - '20:20'
       - '21:21'
       - '${PASV_MIN_PORT}-${PASV_MAX_PORT}:${PASV_MIN_PORT}-${PASV_MAX_PORT}'
     networks:
@@ -123,7 +123,6 @@ services:
     env_file: .env
     environment:
       - VSFTPD_PASSWORD_FILE=/run/secrets/vsftpd_password
-      - FQDN=${LOGIN}.${DOMAIN_NAME}
     secrets:
       - vsftpd_password
     restart: always

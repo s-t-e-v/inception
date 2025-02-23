@@ -1,3 +1,5 @@
+# List of fsers whom to deny access rightaway (In vsftpd.conf: userlist_deny=YES)
+
 root
 daemon
 bin

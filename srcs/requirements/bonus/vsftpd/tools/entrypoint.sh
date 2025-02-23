@@ -1,59 +1,53 @@
 #!/bin/bash
-set -e # exit on error
+set -e  # Exit on error
+
+LOGIN_FILE="/etc/vsftpd/login.txt"
+DB_FILE="/etc/vsftpd/login.db"
+FTP_ROOT="/var/www"
 
 set -a
 VSFTPD_PASSWORD=$(cat "${VSFTPD_PASSWORD_FILE}")
 set +a
 
-chown -R ftp:ftp "${WEB_ROOT}"
+create_db() {
+    rm -f "$LOGIN_FILE"
+    
+    for entry in "$@"; do
+        IFS="," read -r user password <<< "$entry"
+        echo "$user" >> "$LOGIN_FILE"
+        echo "$password" >> "$LOGIN_FILE"
+    done
+    echo "" >> "$LOGIN_FILE"
+    
+    rm -f "$DB_FILE"
+    db_load -T -t hash -f "$LOGIN_FILE" "$DB_FILE"
+    chmod 600 /etc/vsftpd/login.*
+    echo "Database created."
+}
 
-LOGIN_FILE=/etc/vsftpd/login.txt
+configure_users() {
+    while read -r user; do
+        [ -z "$user" ] && continue  # Skip empty lines
+        CONFIG_FILE="$USER_CONFIG_DIR/$user"
+        
+        echo "local_root=$FTP_ROOT" > "$CONFIG_FILE"
+        echo "write_enable=YES" >> "$CONFIG_FILE"
+        echo "anon_upload_enable=YES" >> "$CONFIG_FILE"
+        echo "anon_mkdir_write_enable=YES" >> "$CONFIG_FILE"
+        echo "anon_other_write_enable=YES" >> "$CONFIG_FILE"
+        echo "Configuration set for user: $user"
+    done < <(awk 'NR % 2 == 1' "$LOGIN_FILE")  # Read only usernames
+}
 
-# Set login.txt file
-echo "$VSFTPD_USER" > "$LOGIN_FILE"
-echo "$VSFTPD_PASSWORD" >> "$LOGIN_FILE"
-echo "joe" >> "$LOGIN_FILE"
-echo "faux" >> "$LOGIN_FILE"
-echo "" >> "$LOGIN_FILE"
+main() {
+    local users=(
+        "$VSFTPD_USER,$VSFTPD_PASSWORD"
+        )
+    create_db "${users[@]}"
+    configure_users
+    echo "Starting vsftpd..."
+    vsftpd -v
+    exec vsftpd /etc/vsftpd/vsftpd.conf
+}
 
-
-cd /etc/vsftpd
-txt2db.sh login.txt login.db
-cleanconf.sh
-cd /
-
-echo "local_root=/var/www" > /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
-echo "write_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
-echo "anon_upload_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
-echo "anon_mkdir_write_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
-echo "anon_other_write_enable=YES" >> /etc/vsftpd/vsftpd_user_conf/"$VSFTPD_USER"
-
-echo "local_root=/var/www" > /etc/vsftpd/vsftpd_user_conf/joe
-echo "write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
-echo "anon_upload_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
-echo "anon_mkdir_write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
-echo "anon_other_write_enable=NO" >> /etc/vsftpd/vsftpd_user_conf/joe
-
-
-# TLS set up
-
-# Generate SSL private key and contract
-echo "📃  Generating SSL certificate..."
-
-SUBJECT="/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${FQDN}"
-
-if ! openssl req -newkey rsa:2048 \
-    -keyout /etc/ssl/private/vsftpd.key.pem \
-    -x509 -days 365 \
-    -out /etc/ssl/private/vsftpd.cert.pem \
-    -nodes \
-    -subj "$SUBJECT"; then
-    echo "❌  Failed to generate SSL certificate"
-    exit 1
-fi
-
-chmod 600 /etc/ssl/private/vsftpd.key.pem
-chmod 644 /etc/ssl/private/vsftpd.cert.pem
-
-# echo "Starting vsftpd..."
-exec vsftpd /etc/vsftpd/vsftpd.conf
+main
