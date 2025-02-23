@@ -18,6 +18,7 @@ ENV SECURE_CHROOT_DIR=/var/run/vsftpd/empty
 RUN apt update && \
     apt install -y --no-install-recommends \
         vsftpd \
+        ftp \
         libpam-modules \
         db-util && \
     rm -rf /var/lib/apt/lists/*
@@ -51,6 +52,10 @@ COPY conf/pam.d/vsftpd /etc/pam.d/
 
 # Copy the user_list file
 COPY /conf/user_list ${CONF_DIR}
+
+# Set up the health check script
+COPY tools/healthcheck.sh /
+RUN chmod +x /healthcheck.sh
 
 # Set up the entrypoint script
 COPY tools/entrypoint.sh /usr/local/bin

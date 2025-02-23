@@ -128,6 +128,11 @@ services:
     env_file: .env
     environment:
       - VSFTPD_PASSWORD_FILE=/run/secrets/vsftpd_password
+    healthcheck:
+      test: /healthcheck.sh
+      interval: 10s
+      timeout: 5s
+      retries: 3
     secrets:
       - vsftpd_password
     restart: always
