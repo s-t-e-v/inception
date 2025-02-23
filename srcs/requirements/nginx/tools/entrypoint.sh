@@ -23,4 +23,5 @@ chmod 644 "${CONF_DIR}/${FQDN}.crt"
 nginx -t
 
 # Start nginx
+echo "Starting nginx..."
 exec nginx -g 'daemon off;'

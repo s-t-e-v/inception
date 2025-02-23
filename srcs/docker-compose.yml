@@ -9,6 +9,7 @@ services:
       args:
         - FQDN=${LOGIN}.${DOMAIN_NAME}
         - WEB_ROOT=${WEB_ROOT}
+    init: true
     ports:
       - "443:443"
     networks:
@@ -26,6 +27,7 @@ services:
     build:
       context: requirements/mariadb
       dockerfile: Dockerfile
+    init: true
     networks:
       - inception_network
     volumes:
@@ -58,6 +60,7 @@ services:
         - WEB_ROOT=${WEB_ROOT}
         - WP_VERSION=${WP_VERSION}
         - PHP_VERSION=${PHP_VERSION}
+    init: true
     networks:
       - inception_network
     volumes:
@@ -90,6 +93,7 @@ services:
     build:
       context: requirements/bonus/redis
       dockerfile: Dockerfile
+    init: true
     networks:
       - inception_network
     volumes:
@@ -113,6 +117,7 @@ services:
         - WEB_ROOT=${WEB_ROOT}
         - PASV_MIN_PORT=${PASV_MIN_PORT}
         - PASV_MAX_PORT=${PASV_MAX_PORT}
+    init: true
     ports:
       - '21:21'
       - '${PASV_MIN_PORT}-${PASV_MAX_PORT}:${PASV_MIN_PORT}-${PASV_MAX_PORT}'

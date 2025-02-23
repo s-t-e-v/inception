@@ -12,6 +12,7 @@ ARG PASV_MIN_PORT
 ENV USERLIST_FILE=${CONF_DIR}/user_list
 ENV USER_CONFIG_DIR=${CONF_DIR}/vsftpd_user_conf
 ENV XFERLOG_FILE=${LOG_DIR}/vsftpd.log
+ENV SECURE_CHROOT_DIR=/var/run/vsftpd/empty
 
 # Install dependencies
 RUN apt update && \
@@ -26,7 +27,8 @@ RUN mkdir -p \
         ${CONF_DIR} \
         ${USER_CONFIG_DIR} \
         ${LOG_DIR} \
-        /var/run/vsftpd/empty && \
+        ${SECURE_CHROOT_DIR} \
+        && \
     chown -R ftp:ftp ${WEB_ROOT}
 
 # Set up vsftpd configuration file
@@ -41,6 +43,7 @@ pasv_max_port=${PASV_MAX_PORT}
 user_config_dir=${USER_CONFIG_DIR}
 xferlog_file=${XFERLOG_FILE}
 userlist_file=${USERLIST_FILE}
+secure_chroot_dir=${SECURE_CHROOT_DIR}
 EOF
 
 # Copy the pam configuration file

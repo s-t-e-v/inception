@@ -46,7 +46,6 @@ main() {
     create_db "${users[@]}"
     configure_users
     echo "Starting vsftpd..."
-    vsftpd -v
     exec vsftpd /etc/vsftpd/vsftpd.conf
 }
 
