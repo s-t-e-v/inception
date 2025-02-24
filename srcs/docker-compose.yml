@@ -164,11 +164,15 @@ services:
     environment:
       - WORDPRESS_DB_HOST=mariadb:3306
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
-    # healthcheck:
-    #   test: /healthcheck.sh
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 3
+    healthcheck:
+      test: >
+        SCRIPT_FILENAME=/healthcheck.php
+        REQUEST_METHOD=GET
+        cgi-fcgi -bind -connect adminer:9000 | grep 'OK' || exit 1
+      interval: 4s
+      retries: 20
+      start_period: 6s
+      timeout: 30s
     secrets:
       - db_password
     restart: always

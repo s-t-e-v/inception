@@ -42,7 +42,7 @@ RUN curl -L -O https://github.com/vrana/adminer/releases/download/v${ADMINER_VER
 RUN chown -R www-data:www-data ${ADMINER_ROOT}
 
 # Set up healthcheck and entrypoint 
-# COPY tools/healthcheck.php /
+COPY tools/healthcheck.php /
 COPY tools/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
