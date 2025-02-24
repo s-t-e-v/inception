@@ -35,7 +35,7 @@ RUN sed -i 's/^error_log =.*/error_log = \/var\/log\/php-fpm\/php'"${PHP_VERSION
 WORKDIR ${ADMINER_ROOT}
 
 # Install && download Adminer
-RUN curl -O https://github.com/vrana/adminer/releases/download/v${ADMINER_VERSION}/adminer-${ADMINER_VERSION}.php && \
+RUN curl -L -O https://github.com/vrana/adminer/releases/download/v${ADMINER_VERSION}/adminer-${ADMINER_VERSION}.php && \
     mv adminer-${ADMINER_VERSION}.php index.php
 
 # Update permission for the Adminer root folder 
