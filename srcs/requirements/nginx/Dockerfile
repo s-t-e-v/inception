@@ -1,7 +1,7 @@
 FROM debian:bullseye
 
 ARG FQDN
-ARG WEB_ROOT
+ARG WP_ROOT
 # Bonus
 ARG ADMINER_ROOT
 
@@ -23,7 +23,7 @@ RUN apt update && \
 
 # Set up nginx.conf
 COPY conf/${CONF_TEMPLATE} ${CONF_DIR}
-RUN envsubst '$FQDN $WEB_ROOT $ADMINER_ROOT' \
+RUN envsubst '$FQDN $WP_ROOT $ADMINER_ROOT' \
     < "$CONF_DIR"/"$CONF_TEMPLATE" \
     > "$CONF_DIR"/nginx.conf
 

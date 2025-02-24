@@ -1,6 +1,6 @@
 FROM debian:bullseye
 
-ARG WEB_ROOT
+ARG WP_ROOT
 
 ENV CONF_DIR=/etc/vsftpd
 ENV VSFTPD_CONF=${CONF_DIR}/vsftpd.conf
@@ -24,13 +24,13 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
-        ${WEB_ROOT} \
+        ${WP_ROOT} \
         ${CONF_DIR} \
         ${USER_CONFIG_DIR} \
         ${LOG_DIR} \
         ${SECURE_CHROOT_DIR} \
         && \
-    chown -R ftp:ftp ${WEB_ROOT}
+    chown -R ftp:ftp ${WP_ROOT}
 
 # Set up vsftpd configuration file
 COPY conf/vsftpd.conf ${VSFTPD_CONF}

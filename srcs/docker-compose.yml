@@ -10,8 +10,8 @@ services:
       context: requirements/nginx
       dockerfile: Dockerfile
       args:
-        - FQDN=${LOGIN}.${DOMAIN_NAME}
-        - WEB_ROOT=${WEB_ROOT}
+        - FQDN=${FQDN}
+        - WP_ROOT=${WP_ROOT}
         - ADMINER_ROOT=${ADMINER_ROOT}
     init: true
     ports:
@@ -19,7 +19,7 @@ services:
     networks:
       - inception_network
     volumes:
-      - wordpress_files:${WEB_ROOT}
+      - wordpress_files:${WP_ROOT}
       # Bonus
       - adminer:${ADMINER_ROOT}
     env_file: .env
@@ -63,19 +63,20 @@ services:
       context: requirements/wordpress
       dockerfile: Dockerfile
       args:
-        - WEB_ROOT=${WEB_ROOT}
+        - WP_ROOT=${WP_ROOT}
         - WP_VERSION=${WP_VERSION}
         - PHP_VERSION=${PHP_VERSION}
     init: true
     networks:
       - inception_network
     volumes:
-      - wordpress_files:${WEB_ROOT}
+      - wordpress_files:${WP_ROOT}
     environment:
       - WORDPRESS_DB_HOST=mariadb:3306
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
       - WORDPRESS_CREDENTIALS_FILE=/run/secrets/credentials
-      - FQDN=${LOGIN}.${DOMAIN_NAME}
+      - FQDN=${FQDN}
+      - WEB_BASE_DIR=${WEB_BASE_DIR}
       # Bonus
       - REDIS_PASSWORD_FILE=/run/secrets/redis_password
     env_file: .env
@@ -120,7 +121,7 @@ services:
       context: requirements/bonus/vsftpd
       dockerfile: Dockerfile
       args:
-        - WEB_ROOT=${WEB_ROOT}
+        - WP_ROOT=${WP_ROOT}
         - PASV_MIN_PORT=${PASV_MIN_PORT}
         - PASV_MAX_PORT=${PASV_MAX_PORT}
     init: true
@@ -130,7 +131,7 @@ services:
     networks:
       - inception_network
     volumes:
-      - wordpress_files:${WEB_ROOT}
+      - wordpress_files:${WP_ROOT}
     env_file: .env
     environment:
       - VSFTPD_PASSWORD_FILE=/run/secrets/vsftpd_password
@@ -180,26 +181,26 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /home/${LOGIN}/data/wordpress_db
+      device: ${DATA_DIR}/wordpress_db
   wordpress_files:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /home/${LOGIN}/data/wordpress_files
+      device: ${DATA_DIR}/wordpress_files
   # Bonus
   redis_dump:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /home/${LOGIN}/data/redis_dump
+      device: ${DATA_DIR}/redis_dump
   adminer:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /home/${LOGIN}/data/adminer
+      device: ${DATA_DIR}/adminer
 
 
 secrets:

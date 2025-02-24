@@ -1,6 +1,5 @@
 include srcs/.env  # Load variables from .env
 
-DATA_DIR ?= /home/$(LOGIN)/data
 COMPOSE_FILE := srcs/docker-compose.yml
 
 all: up

@@ -3,7 +3,6 @@ set -e  # Exit on error
 
 LOGIN_FILE="/etc/vsftpd/login.txt"
 DB_FILE="/etc/vsftpd/login.db"
-FTP_ROOT="/var/www"
 
 set -a
 VSFTPD_PASSWORD=$(cat "${VSFTPD_PASSWORD_FILE}")
@@ -30,7 +29,7 @@ configure_users() {
         [ -z "$user" ] && continue  # Skip empty lines
         CONFIG_FILE="$USER_CONFIG_DIR/$user"
         
-        echo "local_root=$FTP_ROOT" > "$CONFIG_FILE"
+        echo "local_root=$WEB_CONTENT_DIR" > "$CONFIG_FILE"
         echo "write_enable=YES" >> "$CONFIG_FILE"
         echo "anon_upload_enable=YES" >> "$CONFIG_FILE"
         echo "anon_mkdir_write_enable=YES" >> "$CONFIG_FILE"

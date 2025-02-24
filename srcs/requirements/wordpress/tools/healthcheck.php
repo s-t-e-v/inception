@@ -2,15 +2,15 @@
 // healthcheck.php
 define('WP_USE_THEMES', false);
 
-$web_root = getenv('WEB_ROOT');
+$WP_ROOT = getenv('WP_ROOT');
 
 // Check if wp-blog-header.php exists
-if (!file_exists("{$web_root}/wp-blog-header.php")) {
+if (!file_exists("{$WP_ROOT}/wp-blog-header.php")) {
     echo "FAIL: wp-blog-header.php not found\n";
     exit(1);
 }
 
-require_once "{$web_root}/wp-blog-header.php";
+require_once "{$WP_ROOT}/wp-blog-header.php";
 
 // Check if WordPress is loaded
 if (!defined('WPINC')) {
