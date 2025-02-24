@@ -66,6 +66,7 @@ services:
         - WP_ROOT=${WP_ROOT}
         - WP_VERSION=${WP_VERSION}
         - PHP_VERSION=${PHP_VERSION}
+        - WEB_BASE_DIR=${WEB_BASE_DIR}
     init: true
     networks:
       - inception_network
