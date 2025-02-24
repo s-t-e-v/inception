@@ -6,11 +6,14 @@ services:
       # Bonus
       adminer:
         condition: service_started
+      static_website:
+        condition: service_started
     build:
       context: requirements/nginx
       dockerfile: Dockerfile
       args:
         - FQDN=${FQDN}
+        - STATIC_WEBSITE_FQDN=${STATIC_WEBSITE_FQDN}
         - WP_ROOT=${WP_ROOT}
         - ADMINER_ROOT=${ADMINER_ROOT}
     init: true
@@ -22,6 +25,7 @@ services:
       - wordpress_files:${WP_ROOT}
       # Bonus
       - adminer:${ADMINER_ROOT}
+      - static_website_files:${STATIC_WEBSITE_ROOT}
     env_file: .env
     healthcheck:
       test: service nginx status || exit 1
@@ -176,6 +180,25 @@ services:
     secrets:
       - db_password
     restart: always
+  static_website:
+    build:
+      context: requirements/bonus/static_website
+      dockerfile: Dockerfile
+      args:
+        - STATIC_WEBSITE_FQDN=${STATIC_WEBSITE_FQDN}
+        - STATIC_WEBSITE_ROOT=${STATIC_WEBSITE_ROOT}
+    init: true
+    networks:
+      - inception_network
+    volumes:
+      - static_website_files:${STATIC_WEBSITE_ROOT}
+    env_file: .env
+    healthcheck:
+      test: service nginx status || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: always
 
 networks:
   inception_network:
@@ -206,6 +229,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: ${DATA_DIR}/adminer
+  static_website_files:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: ${DATA_DIR}/static_website
 
 
 secrets:

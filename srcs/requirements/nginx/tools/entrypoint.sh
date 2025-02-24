@@ -1,27 +1,52 @@
 #!/bin/bash
-set -e # exit on error
+set -e  # Exit on error
 
-# Generate SSL private key and contract
-echo "📃  Generating SSL certificate..."
+# Define certificate details
+CERT_DETAILS=(
+    # "<subject> <domain_name"
+    "/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${FQDN} ${FQDN}"
+    # -- Bonus
+    "/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${STATIC_WEBSITE_FQDN} ${STATIC_WEBSITE_FQDN}"
+)
 
-SUBJECT="/C=FR/ST=IDF/L=Paris/O=42/OU=42inception/CN=${FQDN}"
+# Function to generate one SSL certificate
+generate_ssl_cert() {
+    local subject="$1"
+    local fqdn="$2"
 
-if ! openssl req -newkey rsa:2048 \
-    -keyout "${CONF_DIR}/${FQDN}.key" \
-    -x509 -days 90 \
-    -out "${CONF_DIR}/${FQDN}.crt" \
-    -nodes \
-    -subj "$SUBJECT"; then
-    echo "❌  Failed to generate SSL certificate"
-    exit 1
-fi
+    echo "📃 Generating SSL certificate for ${fqdn}..."
+    
+    openssl req -newkey rsa:2048 \
+        -keyout "${KEYS_DIR}/${fqdn}.key" \
+        -x509 -days 90 \
+        -out "${CERTS_DIR}/${fqdn}.crt" \
+        -nodes \
+        -subj "$subject"
 
-chmod 600 "${CONF_DIR}/${FQDN}.key"
-chmod 644 "${CONF_DIR}/${FQDN}.crt"
+    chmod 600 "${KEYS_DIR}/${fqdn}.key"
+    chmod 644 "${CERTS_DIR}/${fqdn}.crt"
 
-# Validate the configuration
-nginx -t
+    echo "✅ SSL certificate generated for ${fqdn}"
+}
 
-# Start nginx
-echo "Starting nginx..."
-exec nginx -g 'daemon off;'
+# Function to generate multiple SSL certificates
+generate_all_certs() {
+    for details in "${CERT_DETAILS[@]}"; do
+        generate_ssl_cert $details
+    done
+}
+
+# Main function
+main() {
+    generate_all_certs
+
+    # Validate the Nginx configuration
+    echo "🔍 Validating Nginx configuration..."
+    nginx -t
+
+    # Start Nginx
+    echo "🚀 Starting Nginx..."
+    exec nginx -g 'daemon off;'
+}
+
+main  # Run the script
