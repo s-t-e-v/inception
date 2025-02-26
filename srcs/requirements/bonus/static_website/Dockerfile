@@ -30,7 +30,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR ${STATIC_WEBSITE_ROOT}
 
-COPY index.html .
+COPY www .
 
 # Update permission for the Web root folder and wp-cli
 RUN chown -R www-data:www-data ${STATIC_WEBSITE_ROOT}
