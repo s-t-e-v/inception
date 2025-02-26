@@ -8,6 +8,8 @@ services:
         condition: service_started
       static_website:
         condition: service_started
+      minio:
+        condition: service_started
     build:
       context: requirements/nginx
       dockerfile: Dockerfile
@@ -207,14 +209,21 @@ services:
     init: true
     networks:
       - inception_network
-    # volumes:
-    #   - static_website_files:${STATIC_WEBSITE_ROOT}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio:/minio
     env_file: .env
+    environment:
+      - MINIO_ROOT_PASSWORD_FILE=/run/secrets/minio_root_password
     # healthcheck:
     #   test: service nginx status || exit 1
     #   interval: 10s
     #   timeout: 5s
     #   retries: 3
+    secrets:
+      - minio_root_password
     restart: always
 
 networks:
@@ -252,12 +261,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: ${DATA_DIR}/static_website
-  # minio:
-  #   driver: local
-  #   driver_opts:
-  #     type: 'none'
-  #     o: 'bind'
-  #     device: ${DATA_DIR}/minio
+  minio:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: ${DATA_DIR}/minio
 
 
 secrets:
@@ -272,3 +281,5 @@ secrets:
     file: ../secrets/redis_password.txt
   vsftpd_password:
     file: ../secrets/vsftpd_password.txt
+  minio_root_password:
+    file: ../secrets/minio_root_password.txt
