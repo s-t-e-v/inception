@@ -10,6 +10,7 @@ if [ ! -f wp-config.php ]; then
     # ---- Bonus
     REDIS_PASSWORD=$(cat "$REDIS_PASSWORD_FILE")
     source "$WORDPRESS_CREDENTIALS_FILE"
+    source "$MINIO_CREDENTIALS_FILE"
     set +a
     # Create the wp-config.php file
     wp config create \
@@ -54,6 +55,17 @@ if [ ! -f wp-config.php ]; then
     wp plugin install redis-cache --activate
 
     wp redis enable
+
+    # WP Offload Media Lite
+    wp config set AS3CF_SETTINGS "$(php -r 'echo serialize(array(
+    "provider" => "aws",
+    "access-key-id" => "$MINIO_ACCESS_KEY",
+    "secret-access-key" => "MINIO_SECRET_KEY",
+    "endpoint" => "http://$MINIO_ENDPOINT",
+    "use-path-style-endpoint" => true,
+));')" --raw
+
+    wp plugin install amazon-s3-and-cloudfront --activate
 
     echo "Wordpress is ready!  🚀"
 fi

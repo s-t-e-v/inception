@@ -22,7 +22,10 @@ RUN apt update && \
         php${PHP_VERSION}-fpm \
         php${PHP_VERSION}-cli \
         # Bonus
-        php${PHP_VERSION}-redis && \
+        php${PHP_VERSION}-redis \
+        php${PHP_VERSION}-xml \
+        php${PHP_VERSION}-curl \
+        && \
     rm -rf /var/lib/apt/lists/*
 
 # Set up directories and permissions
