@@ -9,7 +9,9 @@ RUN apt update && \
     curl -OL https://dl.min.io/client/mc/release/linux-amd64/mc && \
     chmod +x mc && mv mc /usr/local/bin/mc
 
-RUN mkdir -p minio
+RUN mkdir -p minio policy
+
+# COPY policy/wp-policy.json policy/
 
 # Set up healthcheck and entrypoint 
 # COPY tools/healthcheck.sh /

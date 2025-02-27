@@ -13,7 +13,10 @@ RUN apt update && \
         ca-certificates \
         lsb-release \
         libfcgi0ldbl \
-        apt-transport-https && \
+        apt-transport-https \
+        # Bonus
+        imagemagick \
+        && \
     curl -sSL https://packages.sury.org/php/README.txt | bash -x && \
     apt update && \
     apt install -y --no-install-recommends \
@@ -25,6 +28,7 @@ RUN apt update && \
         php${PHP_VERSION}-redis \
         php${PHP_VERSION}-xml \
         php${PHP_VERSION}-curl \
+        php${PHP_VERSION}-imagick \
         && \
     rm -rf /var/lib/apt/lists/*
 

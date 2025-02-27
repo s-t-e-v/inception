@@ -7,10 +7,11 @@ if [ ! -f wp-config.php ]; then
     # Load credentials
     set -a
     MYSQL_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
+    source "$WORDPRESS_CREDENTIALS_FILE"
     # ---- Bonus
     REDIS_PASSWORD=$(cat "$REDIS_PASSWORD_FILE")
-    source "$WORDPRESS_CREDENTIALS_FILE"
-    source "$MINIO_CREDENTIALS_FILE"
+    MINIO_WP_PASSWORD=$(cat "$MINIO_WP_PASSWORD_FILE")
+    source "$MINIO_ACCESS_KEYS_FILE"
     set +a
     # Create the wp-config.php file
     wp config create \
@@ -56,15 +57,26 @@ if [ ! -f wp-config.php ]; then
 
     wp redis enable
 
-    # WP Offload Media Lite
-    wp config set AS3CF_SETTINGS "$(php -r 'echo serialize(array(
-    "provider" => "aws",
-    "access-key-id" => "$MINIO_ACCESS_KEY",
-    "secret-access-key" => "MINIO_SECRET_KEY",
-    "endpoint" => "http://$MINIO_ENDPOINT",
-    "use-path-style-endpoint" => true,
-));')" --raw
 
+    # Ensure AS3CF_SETTINGS is added *before* the "stop editing" line
+    if grep -q "That's all, stop editing" wp-config.php; then
+        sed -i "/That's all, stop editing/i\\
+define( 'AS3CF_SETTINGS', serialize( array(\\
+    'provider'              => 'aws',\\
+    'access-key-id'         => '${MINIO_WP_ACCESS_KEY}',\\
+    'secret-access-key'     => '${MINIO_WP_SECRET_KEY}',\\
+    'bucket'                => 'wpbucket',\\
+    'region'                => 'eu-east-1',\\
+    'endpoint'              => 'http://minio:9000',\\
+    'use-path-style-endpoint'=> true,\\
+    'copy-to-s3'            => true,\\
+    'serve-from-s3'         => true,\\
+    'remove-local-file'     => true\\
+) ) );\\
+" wp-config.php
+    fi
+
+       # Install & Activate WP Offload Media Plugin
     wp plugin install amazon-s3-and-cloudfront --activate
 
     echo "Wordpress is ready!  🚀"
