@@ -63,8 +63,6 @@ services:
       # Bonus
       redis:
         condition: service_started
-      minio:
-        condition: service_started
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile
@@ -86,9 +84,6 @@ services:
       - WEB_BASE_DIR=${WEB_BASE_DIR}
       # Bonus
       - REDIS_PASSWORD_FILE=/run/secrets/redis_password
-      - MINIO_ROOT_PASSWORD_FILE=/run/secrets/minio_root_password
-      - MINIO_WP_PASSWORD_FILE=/run/secrets/minio_wp_password
-      - MINIO_ACCESS_KEYS_FILE=/run/secrets/minio_access_keys
     env_file: .env
     healthcheck:
       test: >
@@ -104,9 +99,6 @@ services:
       - credentials
       # Bonus
       - redis_password
-      - minio_root_password
-      - minio_wp_password
-      - minio_access_keys
     restart: always
   # Bonus
   redis:
@@ -214,7 +206,8 @@ services:
     init: true
     networks:
       - inception_network
-    ports: 22
+    ports:
+      - "22:22"
     volumes:
       - static_website_files:${STATIC_WEBSITE_ROOT}
     env_file: .env
@@ -267,12 +260,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: ${DATA_DIR}/static_website
-  minio:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: ${DATA_DIR}/minio
 
 
 secrets:
@@ -287,9 +274,5 @@ secrets:
     file: ../secrets/redis_password.txt
   vsftpd_password:
     file: ../secrets/vsftpd_password.txt
-  minio_root_password:
-    file: ../secrets/minio_root_password.txt
-  minio_wp_password:
-    file: ../secrets/minio_wp_password.txt
-  minio_access_keys:
-    file: ../secrets/minio_access_keys.txt
+  sftp_password:
+    file: ../secrets/sftp_password.txt

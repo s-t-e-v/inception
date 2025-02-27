@@ -2,9 +2,21 @@
 set -e
 
 # Load credentials
-MINIO_ROOT_PASSWORD=$(cat "$MINIO_ROOT_PASSWORD_FILE")
-MINIO_WP_PASSWORD=$(cat "$MINIO_WP_PASSWORD_FILE")
-source "$MINIO_ACCESS_KEYS_FILE"
+SFTP_PASSWORD=$(cat "$SFTP_PASSWORD_FILE")
 
-# Restart MinIO properly as main process
-exec minio server /minio --console-address :9001
+groupadd sftpusers
+useradd -m -g sftpusers -s /bin/false "$SFTP_USER"
+usermod -a -G www-data "$SFTP_USER"
+echo "$SFTP_USER:$SFTP_PASSWORD" | chpasswd
+
+chown -R root:sftpusers "${STATIC_WEBSITE_ROOT}"
+
+
+cat <<EOF >> /etc/ssh/sshd_config
+Match Group sftpusers
+ChrootDirectory ${WEB_CONTENT_DIR}
+ForceCommand internal-sftp
+EOF
+
+echo "sftp starting..."
+exec /usr/sbin/sshd -D
