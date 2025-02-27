@@ -207,36 +207,29 @@ services:
       timeout: 5s
       retries: 3
     restart: always
-  minio:
+  stfp:
     build:
-      context: requirements/bonus/minio
+      context: requirements/bonus/sftp
       dockerfile: Dockerfile
-      # args:
     init: true
     networks:
       - inception_network
-    ports:
-      - "9000:9000"
-      - "9001:9001"
+    ports: 22
     volumes:
-      - minio:/minio
+      - static_website_files:${STATIC_WEBSITE_ROOT}
     env_file: .env
     environment:
-      - MINIO_ROOT_PASSWORD_FILE=/run/secrets/minio_root_password
-      - MINIO_WP_PASSWORD_FILE=/run/secrets/minio_wp_password
-      - MINIO_ACCESS_KEYS_FILE=/run/secrets/minio_access_keys
-    healthcheck:
-        test:
-            - CMD
-            - curl
-            - '-f'
-            - 'http://localhost:9000/minio/health/live'
-        retries: 3
-        timeout: 5s
+      - SFTP_PASSWORD_FILE=/run/secrets/sftp_password
+    # healthcheck:
+    #     test:
+    #         - CMD
+    #         - curl
+    #         - '-f'
+    #         - 'http://localhost:9000/minio/health/live'
+    #     retries: 3
+    #     timeout: 5s
     secrets:
-      - minio_root_password
-      - minio_wp_password
-      - minio_access_keys
+      - sftp_password
     restart: always
 
 networks:
