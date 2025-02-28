@@ -137,6 +137,10 @@ a:hover {
   .skills .skill-list li:first-child {
     font-size: 0.9375em;
     color: #8c8c8c; }
+  .skills .skill-list ul.skill-set {
+      list-style-type: none;
+      margin: 0;
+      padding-left: 1em; }
 
 .quote {
   background: url(../img/bg.jpg);
