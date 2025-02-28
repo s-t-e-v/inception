@@ -28,9 +28,7 @@ RUN mkdir -p \
         ${CONF_DIR} \
         ${USER_CONFIG_DIR} \
         ${LOG_DIR} \
-        ${SECURE_CHROOT_DIR} \
-        && \
-    chown -R ftp:ftp ${WP_ROOT}
+        ${SECURE_CHROOT_DIR} 
 
 # Set up vsftpd configuration file
 COPY conf/vsftpd.conf ${VSFTPD_CONF}
