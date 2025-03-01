@@ -120,6 +120,9 @@ services:
       - redis_password
     restart: always
   vsftpd:
+    depends_on:
+      wordpress:
+        condition: service_healthy
     build:
       context: requirements/bonus/vsftpd
       dockerfile: Dockerfile
@@ -197,7 +200,10 @@ services:
       timeout: 5s
       retries: 3
     restart: always
-  stfp:
+  sftp:
+    depends_on:
+      static_website:
+        condition: service_healthy
     build:
       context: requirements/bonus/sftp
       dockerfile: Dockerfile
@@ -211,14 +217,6 @@ services:
     env_file: .env
     environment:
       - SFTP_PASSWORD_FILE=/run/secrets/sftp_password
-    # healthcheck:
-    #     test:
-    #         - CMD
-    #         - curl
-    #         - '-f'
-    #         - 'http://localhost:9000/minio/health/live'
-    #     retries: 3
-    #     timeout: 5s
     secrets:
       - sftp_password
     restart: always

@@ -32,9 +32,6 @@ WORKDIR ${STATIC_WEBSITE_ROOT}
 
 COPY www .
 
-# Update permission for the Web root folder and wp-cli
-RUN chown -R www-data:www-data ${STATIC_WEBSITE_ROOT}
-
 EXPOSE 80
 
 # Run nginx as a non-root user

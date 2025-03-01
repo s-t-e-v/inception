@@ -8,7 +8,6 @@ RUN apt update && \
 RUN mkdir -p /run/sshd
 
 # Set up healthcheck and entrypoint 
-# COPY tools/healthcheck.sh /
 COPY tools/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

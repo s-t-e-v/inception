@@ -24,7 +24,6 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
-        ${WP_ROOT} \
         ${CONF_DIR} \
         ${USER_CONFIG_DIR} \
         ${LOG_DIR} \
