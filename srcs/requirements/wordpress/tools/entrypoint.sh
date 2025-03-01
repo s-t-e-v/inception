@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e # Exit on error
 
+cd ${WP_ROOT}
+
 # Install Wordpress if wp-config.php doesn't exist
 if [ ! -f wp-config.php ]; then
     echo "🏗️  Setting up Wordpress..."
@@ -11,54 +13,20 @@ if [ ! -f wp-config.php ]; then
     # ---- Bonus
     REDIS_PASSWORD=$(cat "$REDIS_PASSWORD_FILE")
     set +a
-    # Create the wp-config.php file
-    wp config create \
-        --dbname="$MYSQL_DATABASE" \
-        --dbuser="$MYSQL_USER" \
-        --dbpass="$MYSQL_PASSWORD" \
-        --dbhost="$WORDPRESS_DB_HOST"
 
-    # Install Wordpress
-    wp core install \
-        --url="$FQDN" \
-        --title="$WP_BLOG_TITLE" \
-        --admin_user="$WP_ADMIN" \
-        --admin_password="$WP_ADMIN_PASSWORD" \
-        --admin_email="$WP_ADMIN_MAIL" \
-        --skip-email
+    # Install wp cli 
+    curl -OL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    chmod +x wp-cli.phar
+    mv wp-cli.phar  /usr/local/bin/wp
 
-    # Add the wordpress user
-    wp user create \
-        "$WP_USER" \
-        "$WP_USER_MAIL" \
-        --user_pass="$WP_USER_PASSWORD" \
-        --role=author
-
-    # Set permalink structure
-    wp rewrite structure '/%year%/%monthnum%/%day%/%postname%/'
-
-    # Disable Email Notifications for Comments
-    wp option update comments_notify 0
-
-    # Disable Email Notifications for Comment Moderation
-    wp option update moderation_notify 0
-
-    # ----- BONUS -------
-    # Redis set up
-    wp config set WP_REDIS_HOST "redis" --quiet
-    wp config set WP_REDIS_PORT --raw "6379" --quiet
-    wp config set WP_REDIS_PASSWORD "$REDIS_PASSWORD" --quiet
-    wp config set WP_REDIS_MAXTTL --raw 3600 --quiet # Set the maximum TTL (time to live) for cached data in seconds
-    wp config set WP_REDIS_DISABLED --raw false --quiet
+    # Install wordpress as non-root
+    chown -R www-data:www-data ${WP_ROOT}
+    gosu www-data wordpress_install.sh
     
-    wp plugin install redis-cache --activate
-
-    wp redis enable
-
     echo "Wordpress is ready!  🚀"
 fi
 
 
 # Start PHP-FPM in the foreground
 echo "Starting php-fpm..."
-exec php-fpm${PHP_VERSION} -F
+exec gosu www-data php-fpm${PHP_VERSION} -F

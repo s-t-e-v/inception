@@ -1,14 +1,13 @@
 FROM debian:bullseye
 
-ARG WP_ROOT
 ARG PHP_VERSION
-ARG WP_VERSION
 ARG WEB_BASE_DIR
 
 # Install PHP and dependencies
 RUN apt update && \
     apt install -y \
         curl \
+        gosu \
         software-properties-common \
         ca-certificates \
         lsb-release \
@@ -25,25 +24,18 @@ RUN apt update && \
         php${PHP_VERSION}-redis && \
     rm -rf /var/lib/apt/lists/*
 
-# Set up directories and permissions
-RUN mkdir -p ${WP_ROOT} /run/php /var/log/php-fpm ${WEB_BASE_DIR}/.wp-cli/cache && \
-    chown -R www-data:www-data ${WP_ROOT} /run/php /var/log/php-fpm ${WEB_BASE_DIR}/.wp-cli
+
+RUN mkdir -p /run/php /var/log/php-fpm ${WEB_BASE_DIR}/.wp-cli && \
+    chown -R www-data:www-data /run/php /var/log/php-fpm ${WEB_BASE_DIR}/.wp-cli
 
 # Set up PHP-FPM config
 COPY conf/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/
 RUN sed -i 's/^error_log =.*/error_log = \/var\/log\/php-fpm\/php'"${PHP_VERSION}"'-fpm.log/' \
-/etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+    /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
 
-WORKDIR ${WP_ROOT}
-
-# Install wp cli && download Wordpress
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-chmod +x wp-cli.phar && \
-mv wp-cli.phar  /usr/local/bin/wp && \
-wp core download --version=${WP_VERSION} --allow-root
-
-# Update permission for the Web root folder and wp-cli
-RUN chown -R www-data:www-data ${WP_ROOT}
+# Set up wordpress install script
+COPY tools/wordpress_install.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/wordpress_install.sh
 
 # Set up healthcheck and entrypoint 
 COPY tools/healthcheck.php /
@@ -52,6 +44,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 9000
 
-# Run wordpress+php-fpm as a non-root user
-USER www-data
 ENTRYPOINT [ "entrypoint.sh" ]

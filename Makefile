@@ -5,7 +5,7 @@ COMPOSE_FILE := srcs/docker-compose.yml
 all: up
 
 up: prepare
-	docker compose -f $(COMPOSE_FILE) up --build $(ARGS)
+	docker compose -f $(COMPOSE_FILE) up ${OPTS} --build $(ARGS)
 
 prepare:
 	@mkdir -p $(DATA_DIR)/wordpress_db

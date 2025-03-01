@@ -67,8 +67,6 @@ services:
       context: requirements/wordpress
       dockerfile: Dockerfile
       args:
-        - WP_ROOT=${WP_ROOT}
-        - WP_VERSION=${WP_VERSION}
         - PHP_VERSION=${PHP_VERSION}
         - WEB_BASE_DIR=${WEB_BASE_DIR}
     init: true
