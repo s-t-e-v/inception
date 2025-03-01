@@ -34,6 +34,7 @@ configure_users() {
         echo "anon_upload_enable=YES" >> "$CONFIG_FILE"
         echo "anon_mkdir_write_enable=YES" >> "$CONFIG_FILE"
         echo "anon_other_write_enable=YES" >> "$CONFIG_FILE"
+        echo "anon_umask=022" >> "$CONFIG_FILE"
         echo "Configuration set for user: $user"
     done < <(awk 'NR % 2 == 1' "$LOGIN_FILE")  # Read only usernames
 }
