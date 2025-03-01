@@ -24,8 +24,8 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 
 # Set up directories and permissions
-RUN mkdir -p ${ADMINER_ROOT} /run/php /var/log/php-fpm && \
-    chown -R www-data:www-data ${ADMINER_ROOT} /run/php /var/log/php-fpm
+RUN mkdir -p /run/php /var/log/php-fpm && \
+    chown -R www-data:www-data /run/php /var/log/php-fpm
 
 # Set up PHP-FPM config
 COPY conf/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/
@@ -37,9 +37,6 @@ WORKDIR ${ADMINER_ROOT}
 # Install && download Adminer
 RUN curl -L -O https://github.com/vrana/adminer/releases/download/v${ADMINER_VERSION}/adminer-${ADMINER_VERSION}.php && \
     mv adminer-${ADMINER_VERSION}.php index.php
-
-# Update permission for the Adminer root folder 
-RUN chown -R www-data:www-data ${ADMINER_ROOT}
 
 # Set up healthcheck and entrypoint 
 COPY tools/healthcheck.php /
