@@ -40,7 +40,8 @@ configure_users() {
 }
 
 main() {
-    chown -R ftp:ftp ${WP_ROOT}
+    chown -R www-data:www-data ${WP_ROOT}
+    usermod -a -G www-data ftp
     local users=(
         "$VSFTPD_USER,$VSFTPD_PASSWORD"
         )
