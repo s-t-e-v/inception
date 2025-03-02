@@ -41,6 +41,7 @@ configure_users() {
 
 main() {
     chown -R www-data:www-data ${WP_ROOT}
+    chmod -R 775 ${WP_ROOT}
     usermod -a -G www-data ftp
     local users=(
         "$VSFTPD_USER,$VSFTPD_PASSWORD"
