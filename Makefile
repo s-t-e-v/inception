@@ -33,6 +33,6 @@ del:
 
 param:
 	cp -r ~/inception/secrets .
-	cp ~/inception/srcs/.env /srcs
+	cp ~/inception/srcs/.env srcs
 
 .PHONY: up prepare stop down del
