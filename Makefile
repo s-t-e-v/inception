@@ -14,7 +14,6 @@ prepare:
 	@mkdir -p $(DATA_DIR)/redis_dump
 	@mkdir -p $(DATA_DIR)/adminer
 	@mkdir -p $(DATA_DIR)/static_website
-	@mkdir -p $(DATA_DIR)/minio
 
 stop:
 	docker compose -f $(COMPOSE_FILE) stop
