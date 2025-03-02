@@ -31,8 +31,4 @@ del:
 	docker system prune --all --force --volumes
 	docker volume rm -f $$(docker volume ls | grep -v DRIVER | tr -s " " | cut -d " " -f 2 | tr "\n" " ") 2>/dev/null || true
 
-param:
-	cp -r ~/inception/secrets .
-	cp ~/inception/srcs/.env srcs
-
 .PHONY: up prepare stop down del
